@@ -4,14 +4,18 @@ Capacitor plugin for DENSO Scanner
 
 ## Install
 
+This project must be built and used locally due to the DENSO license.
+
 ```bash
-npm install capacitor-densoscanner
-npx cap sync
+% git clone git@github.com:rdlabo-team/capacitor-densoscanner.git
+% cd capacitor-densoscanner
+% npm install && npm run build
+% npm link
 ```
 
 ### iOS
 
-DENSOのWebサイトから、DENSOScannerSDK.frameworkをダウンロードして、以下のパスに配置してください。なお、DENSOScannerSDK.framework以下はデフォルトの構成です。
+Download DENSOScannerSDK.framework from the DENSO website and place it in the following path. Note that the configuration under DENSOScannerSDK.framework is the default configuration.
 
 - ios/Sources/DENSOScannerSDK.framework
   - Headers/
