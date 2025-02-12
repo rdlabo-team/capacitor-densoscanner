@@ -1,5 +1,5 @@
 {
-  "name": "capacitor-densoscanner",
+  "name": "@rdlabo/capacitor-densoscanner",
   "version": "0.0.1",
   "description": "Capacitor plugin for DENSO Scanner",
   "main": "dist/plugin.cjs.js",
