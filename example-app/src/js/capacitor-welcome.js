@@ -1,5 +1,6 @@
 import { SplashScreen } from '@capacitor/splash-screen';
 import { Camera } from '@capacitor/camera';
+import { DensoScanner } from '@rdlabo/capacitor-densoscanner'
 
 window.customElements.define(
   'capacitor-welcome',
@@ -94,16 +95,7 @@ window.customElements.define(
 
       self.shadowRoot.querySelector('#take-photo').addEventListener('click', async function (e) {
         try {
-          const photo = await Camera.getPhoto({
-            resultType: 'uri',
-          });
-
-          const image = self.shadowRoot.querySelector('#image');
-          if (!image) {
-            return;
-          }
-
-          image.src = photo.webPath;
+            await DensoScanner.echo({ value: 'Hello World' });
         } catch (e) {
           console.warn('User cancelled', e);
         }
