@@ -28,6 +28,7 @@ Download DENSOScannerSDK.framework from the DENSO website and place it in the fo
 <docgen-index>
 
 * [`initialize()`](#initialize)
+* [`destroy()`](#destroy)
 * [`startRead()`](#startread)
 * [`stopRead()`](#stopread)
 * [`addListener(DensoScannerEvent.OnScannerStatusChanged, ...)`](#addlistenerdensoscannereventonscannerstatuschanged-)
@@ -44,6 +45,15 @@ Download DENSOScannerSDK.framework from the DENSO website and place it in the fo
 
 ```typescript
 initialize() => Promise<void>
+```
+
+--------------------
+
+
+### destroy()
+
+```typescript
+destroy() => Promise<void>
 ```
 
 --------------------

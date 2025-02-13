@@ -13,6 +13,7 @@ public class DensoScannerPlugin: CAPPlugin, CAPBridgedPlugin, ScannerAcceptStatu
     public let jsName = "DensoScanner"
     public let pluginMethods: [CAPPluginMethod] = [
         CAPPluginMethod(name: "initialize", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "destroy", returnType: CAPPluginReturnPromise),
         CAPPluginMethod(name: "startRead", returnType: CAPPluginReturnPromise),
         CAPPluginMethod(name: "stopRead", returnType: CAPPluginReturnPromise)
     ]
@@ -34,6 +35,7 @@ public class DensoScannerPlugin: CAPPlugin, CAPBridgedPlugin, ScannerAcceptStatu
                     scannerConnected = true
                     commScanner = scanner
                     notifyListeners(DensoScannerStatusEvents.SCANNER_STATUS_CLAIMED.rawValue, data: [:])
+                    scanner.addStatusListener(self)
                     break
                 }
             }
@@ -43,12 +45,26 @@ public class DensoScannerPlugin: CAPPlugin, CAPBridgedPlugin, ScannerAcceptStatu
             CommManager.sharedInstance().addAcceptStatusListener(listener: self)
         }
         
-        let value = call.getString("value") ?? ""
-        call.resolve([
-            "value": implementation.echo(value)
-        ])
+        call.resolve([:])
     }
     
+    @objc func destroy(_ call: CAPPluginCall) {
+        if (scannerRead) {
+            CommManager.sharedInstance()?.endAccept()
+        }
+        
+        commScanner?.removeStatusListener(self)
+        
+        var error: NSError? = nil
+        commScanner?.close(&error)
+        
+        if (error != nil) {
+            call.reject(error!.localizedDescription);
+            return
+        }
+        
+        call.resolve([:]);
+    }
     
     @objc func startRead(_ call: CAPPluginCall) {
         if (scannerConnected && !scannerRead) {
@@ -56,9 +72,10 @@ public class DensoScannerPlugin: CAPPlugin, CAPBridgedPlugin, ScannerAcceptStatu
             scannerRead = true
             call.resolve()
         } else if (scannerRead) {
-            // すでに読み込みを行っているため、何もせずにresolveを返す
+            // すでに読み込みを開始しているため、何もせずにresolveを返す
             call.resolve()
         } else {
+            // scannerに未接続の場合
             call.reject("scanner not connected")
         }
     }
@@ -66,17 +83,35 @@ public class DensoScannerPlugin: CAPPlugin, CAPBridgedPlugin, ScannerAcceptStatu
     
     @objc func stopRead(_ call: CAPPluginCall) {
         if (scannerRead) {
+            scannerRead = false
             CommManager.sharedInstance()?.endAccept()
         }
         call.resolve()
     }
     
-    
-    
-    public func OnScannerAppeared(scanner: CommScanner!) {
-        notifyListeners(DensoScannerStatusEvents.SCANNER_STATUS_CLAIMED.rawValue, data: [:])
+    private func setupScanner(scanner: CommScanner) -> Bool {
+        var error: NSError? = nil
+        scanner.claim(&error)
+        if (error != nil) {
+            return false
+        }
+        return true
     }
     
+    public func OnScannerAppeared(scanner: CommScanner!) {
+        let scannerSetup = setupScanner(scanner: scanner)
+        if !scannerSetup {
+            return
+        }
+        
+        CommManager.sharedInstance().endAccept()
+        CommManager.sharedInstance().removeAcceptStatusListener(listener: self)
+        
+        scannerConnected = true
+        commScanner = scanner
+        notifyListeners(DensoScannerStatusEvents.SCANNER_STATUS_CLAIMED.rawValue, data: [:])
+        scanner.addStatusListener(self)
+    }
     
     public func OnRFIDDataReceived(scanner: CommScanner!, rfidEvent: RFIDDataReceivedEvent!) {
         guard let data = rfidEvent.getRFIDData().first else {
@@ -110,52 +145,19 @@ public class DensoScannerPlugin: CAPPlugin, CAPBridgedPlugin, ScannerAcceptStatu
         }
     }
     
-    private func setupScanner(scanner: CommScanner) -> Bool {
-        var error: NSError? = nil
-        scanner.claim(&error)
-        if (error != nil) {
-            return false
-        }
-        
-        // TODO: notification
-        return true
-    }
-    
     func convertDataToString(_ data: Data) -> String? {
         return data.map { String(format: "%02X", $0) }.joined()
     }
 }
 
 struct AppConstant {
-    static let appTitle = "SP1 DemoSDK"
     static let deviceSP1 = "SP1"
-    static let locateTagTitle = "Locate Tag"
-    static let bluetoothTitle = "Bluetooth"
-    static let barcodeTitle = "Barcode"
-    static let rfidTitle = "Rfid"
-    static let dBm = "dBm"
-    static let noValue = "No Value"
-    static let uiiKey = "uiiKey"
-    static let done = "Done"
-    static let cancel = "Cancel"
-    static let loading = "Loading"
-    static let wavExtension = "wav"
-    static let isConnected = "isConnected"
-    static let track1SoundName = "track1"
-    static let track2SoundName = "track2"
-    static let track3SoundName = "track3"
-    static let track4SoundName = "track4"
-    static let track5SoundName = "track5"
-    static let buttonWidth = 88
-    static let buttonHeight = 35
-    static let waitingTime = TimeInterval(exactly: 0.6)
 }
 
 public enum DensoScannerEvents: String {
     case OnScannerStatusChanged = "OnScannerStatusChanged"
     case ReadData = "ReadData"
 }
-
 
 public enum DensoScannerStatusEvents: String {
     case SCANNER_STATUS_CLAIMED = "SCANNER_STATUS_CLAIMED"

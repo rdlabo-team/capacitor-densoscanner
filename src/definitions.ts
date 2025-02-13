@@ -2,6 +2,7 @@ import type { PluginListenerHandle } from '@capacitor/core';
 
 export interface DensoScannerPlugin {
   initialize(): Promise<void>;
+  destroy(): Promise<void>;
   startRead(): Promise<void>;
   stopRead(): Promise<void>;
 

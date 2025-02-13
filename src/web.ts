@@ -6,6 +6,9 @@ export class DensoScannerWeb extends WebPlugin implements DensoScannerPlugin {
   async initialize(): Promise<void> {
     console.log('initialize');
   }
+  async destroy(): Promise<void> {
+    console.log('destroy');
+  }
   async startRead(): Promise<void> {
     console.log('startScan');
   }
