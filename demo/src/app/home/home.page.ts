@@ -17,12 +17,12 @@ export class HomePage implements OnInit, OnDestroy {
   async ngOnInit() {
     this.listenerHandles.push(
       await DensoScanner.addListener(DensoScannerEvent.OnScannerStatusChanged, (event) => {
-        console.dir(event);
+        console.log(event);
       }),
     );
     this.listenerHandles.push(
       await DensoScanner.addListener(DensoScannerEvent.ReadData, (event) => {
-        console.dir(event);
+        console.log(event);
       }),
     );
   }

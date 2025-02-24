@@ -97,6 +97,30 @@ public class DensoScannerPlugin: CAPPlugin, CAPBridgedPlugin, ScannerAcceptStatu
         }
     }
     
+    @objc func pullData(_ call: CAPPluginCall) {
+        guard let rfidScanner = rfidScanner else {
+            call.reject("scanner not connected")
+            return;
+        }
+        
+        if (!isOpen) {
+            isOpen = true
+            rfidScanner.setDataDelegate(delegate: self)
+            
+            var error: NSError? = nil
+            rfidScanner.pullData(1, error: &error)
+            
+            if (error != nil) {
+                call.reject(error!.localizedDescription)
+                return
+            }
+            call.resolve()
+        } else {
+            // すでに読み込みを開始しているため、何もせずにresolveを返す
+            call.resolve()
+        }
+    }
+    
     
     @objc func close(_ call: CAPPluginCall) {
         guard let rfidScanner = rfidScanner else {
@@ -115,22 +139,6 @@ public class DensoScannerPlugin: CAPPlugin, CAPBridgedPlugin, ScannerAcceptStatu
                 call.reject(error!.localizedDescription)
                 return
             }
-        }
-        call.resolve()
-    }
-    
-    @objc func pullData(_ call: CAPPluginCall) {
-        guard let rfidScanner = rfidScanner else {
-            call.reject("scanner not connected")
-            return;
-        }
-        
-        var error: NSError? = nil
-        rfidScanner.pullData(1, error: &error)
-        
-        if (error != nil) {
-            call.reject(error!.localizedDescription)
-            return
         }
         call.resolve()
     }

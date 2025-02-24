@@ -114,6 +114,7 @@ public class DensoScannerPlugin extends Plugin implements ScannerAcceptStatusLis
         if (!isOpened) {
             try {
                 isOpened = true;
+                commScanner.getRFIDScanner().setDataDelegate(this);
                 commScanner.getRFIDScanner().openInventory();
                 call.resolve();
             } catch (Exception e) {
@@ -133,6 +134,7 @@ public class DensoScannerPlugin extends Plugin implements ScannerAcceptStatusLis
         if (!isOpened) {
             try {
                 isOpened = true;
+                commScanner.getRFIDScanner().setDataDelegate(this);
                 commScanner.getRFIDScanner().pullData(1);
                 call.resolve();
             } catch (Exception e) {
@@ -148,6 +150,7 @@ public class DensoScannerPlugin extends Plugin implements ScannerAcceptStatusLis
         if (isOpened) {
             try {
                 isOpened = false;
+                commScanner.getRFIDScanner().setDataDelegate(null);
                 commScanner.getRFIDScanner().close();
                 call.resolve();
             } catch (Exception e) {
