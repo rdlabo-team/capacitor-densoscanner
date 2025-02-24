@@ -244,15 +244,23 @@ public class DensoScannerPlugin: CAPPlugin, CAPBridgedPlugin, ScannerAcceptStatu
     }
     
     public func OnRFIDDataReceived(scanner: CommScanner!, rfidEvent: RFIDDataReceivedEvent!) {
-        guard let data = rfidEvent.getRFIDData().first else {
+        let rfidDataArray = rfidEvent.getRFIDData()
+            
+        // 空チェック
+        guard let rfidDataArray = rfidEvent.getRFIDData(), !rfidDataArray.isEmpty else {
             return
         }
-        
-        guard let uiiString = implementation.convertDataToString(data.getUII()) else {
-            return
+            
+        // すべてのデータを変換して配列に格納
+        var uiiStrings: [String] = []
+        for data in rfidDataArray {
+            if let uiiString = implementation.convertDataToString(data.getUII()) {
+                uiiStrings.append(uiiString)
+            }
         }
-        
-        notifyListeners(DensoScannerEvents.ReadData.rawValue, data: [ "code": uiiString])
+            
+        // 空の結果になっても通知する（必要に応じて条件変更）
+        notifyListeners(DensoScannerEvents.ReadData.rawValue, data: ["codes": uiiStrings])
     }
     
     public func OnScannerStatusChanged(scanner: CommScanner!, state: CommStatusChangedEvent!) {

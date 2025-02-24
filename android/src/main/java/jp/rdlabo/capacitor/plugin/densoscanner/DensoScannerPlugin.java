@@ -8,8 +8,11 @@ import com.densowave.scannersdk.Const.CommConst;
 import com.densowave.scannersdk.Dto.BarcodeScannerSettings;
 import com.densowave.scannersdk.Dto.CommScannerBtSettings;
 import com.densowave.scannersdk.Dto.RFIDScannerSettings;
+import com.densowave.scannersdk.Listener.RFIDDataDelegate;
 import com.densowave.scannersdk.Listener.ScannerStatusListener;
+import com.densowave.scannersdk.RFID.RFIDDataReceivedEvent;
 import com.densowave.scannersdk.RFID.RFIDException;
+import com.getcapacitor.JSArray;
 import com.getcapacitor.JSObject;
 import com.getcapacitor.PermissionState;
 import com.getcapacitor.Plugin;
@@ -42,7 +45,7 @@ import java.util.List;
                ),
        }
 )
-public class DensoScannerPlugin extends Plugin implements ScannerAcceptStatusListener, ScannerStatusListener {
+public class DensoScannerPlugin extends Plugin implements ScannerAcceptStatusListener, ScannerStatusListener, RFIDDataDelegate {
     public static CommScanner commScanner;
     public static boolean scannerConnected = false;
     public static boolean isOpened = false;
@@ -65,20 +68,14 @@ public class DensoScannerPlugin extends Plugin implements ScannerAcceptStatusLis
         if (listCommScanner != null) {
             for (CommScanner scanner: listCommScanner) {
                 if (scanner.getBTLocalName().contains("SP1")) {
-                    getActivity()
-                            .runOnUiThread(() -> {
-                                try {
-                                    Log.d("denso", "Try connect to " + scanner.getBTLocalName());
-                                    scanner.claim();
-                                } catch (CommException e) {
-                                    Log.d("denso", "Exception " + e.getMessage());
-                                    e.printStackTrace();
-                                }
-                            });
-
-                    scannerConnected = true;
-                    commScanner = scanner;
-
+                    try {
+                        Log.d("denso", "Try connect to " + scanner.getBTLocalName());
+                        scanner.claim();
+                        scannerConnected = true;
+                        commScanner = scanner;
+                    } catch (CommException e) {
+                        Log.d("denso", "Exception " + e.getMessage());
+                    }
                     break;
                 }
             }
@@ -255,6 +252,20 @@ public class DensoScannerPlugin extends Plugin implements ScannerAcceptStatusLis
         } else {
             this.notifyListeners(DensoScannerStatusEvents.SCANNER_STATUS_UNKNOWN.getStatus(), new JSObject());
         }
+    }
+
+    @Override
+    public void onRFIDDataReceived(CommScanner scanner, final RFIDDataReceivedEvent rfidDataReceivedEvent) {
+        JSArray data = new JSArray();
+
+        for (int i = 0; i < rfidDataReceivedEvent.getRFIDData().size(); i++) {
+            byte[] uii = rfidDataReceivedEvent.getRFIDData().get(i).getUII();
+            for (byte loop: uii) {
+                data.put(String.format("%02X ", loop).trim());
+            }
+        }
+
+        notifyListeners(DensoScannerEvents.ReadData.getWebEventName(), new JSObject().put("codes", data));
     }
 
     public boolean isCommScanner() {

@@ -21,7 +21,7 @@ export interface DensoScannerPlugin {
 }
 
 export interface ReadDataEvent {
-  code: string;
+  codes: string[];
 }
 
 /**
