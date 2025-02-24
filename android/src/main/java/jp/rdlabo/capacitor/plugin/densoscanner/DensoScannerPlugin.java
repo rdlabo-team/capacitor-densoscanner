@@ -39,8 +39,6 @@ import java.util.List;
                                Manifest.permission.BLUETOOTH_ADMIN,
                                Manifest.permission.BLUETOOTH_CONNECT,
                                Manifest.permission.BLUETOOTH_SCAN,
-                               Manifest.permission.ACCESS_COARSE_LOCATION,
-                               Manifest.permission.ACCESS_FINE_LOCATION,
                        }
                ),
        }
@@ -71,6 +69,7 @@ public class DensoScannerPlugin extends Plugin implements ScannerAcceptStatusLis
                     try {
                         Log.d("denso", "Try connect to " + scanner.getBTLocalName());
                         scanner.claim();
+                        notifyListeners(DensoScannerStatusEvents.SCANNER_STATUS_CLAIMED.getStatus(), new JSObject());
                         scannerConnected = true;
                         commScanner = scanner;
                     } catch (CommException e) {
@@ -226,6 +225,7 @@ public class DensoScannerPlugin extends Plugin implements ScannerAcceptStatusLis
         Log.d("denso", "OnScannerAppeared");
         try {
             mCommScanner.claim();
+            notifyListeners(DensoScannerStatusEvents.SCANNER_STATUS_CLAIMED.getStatus(), new JSObject());
             // Abort the connection request
             CommManager.endAccept();
             CommManager.removeAcceptStatusListener(this);
@@ -247,13 +247,13 @@ public class DensoScannerPlugin extends Plugin implements ScannerAcceptStatusLis
         CommConst.ScannerStatus scannerStatus = state.getStatus();
 
         if (scannerStatus.equals(CommConst.ScannerStatus.CLAIMED)) {
-            this.notifyListeners(DensoScannerStatusEvents.SCANNER_STATUS_CLAIMED.getStatus(), new JSObject());
+            notifyListeners(DensoScannerStatusEvents.SCANNER_STATUS_CLAIMED.getStatus(), new JSObject());
         } else if (scannerStatus.equals(CommConst.ScannerStatus.CLOSE_WAIT)) {
-            this.notifyListeners(DensoScannerStatusEvents.SCANNER_STATUS_CLOSE_WAIT.getStatus(), new JSObject());
+            notifyListeners(DensoScannerStatusEvents.SCANNER_STATUS_CLOSE_WAIT.getStatus(), new JSObject());
         } else if (scannerStatus.equals(CommConst.ScannerStatus.CLOSED)) {
-            this.notifyListeners(DensoScannerStatusEvents.SCANNER_STATUS_CLOSED.getStatus(), new JSObject());
+            notifyListeners(DensoScannerStatusEvents.SCANNER_STATUS_CLOSED.getStatus(), new JSObject());
         } else {
-            this.notifyListeners(DensoScannerStatusEvents.SCANNER_STATUS_UNKNOWN.getStatus(), new JSObject());
+            notifyListeners(DensoScannerStatusEvents.SCANNER_STATUS_UNKNOWN.getStatus(), new JSObject());
         }
     }
 
