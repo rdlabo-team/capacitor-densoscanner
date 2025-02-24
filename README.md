@@ -27,10 +27,12 @@ Download DENSOScannerSDK.framework from the DENSO website and place it in the fo
 
 <docgen-index>
 
-* [`initialize()`](#initialize)
-* [`destroy()`](#destroy)
+* [`attach()`](#attach)
+* [`detach()`](#detach)
 * [`startRead()`](#startread)
 * [`stopRead()`](#stopread)
+* [`getSettings()`](#getsettings)
+* [`setSettings(...)`](#setsettings)
 * [`addListener(DensoScannerEvent.OnScannerStatusChanged, ...)`](#addlistenerdensoscannereventonscannerstatuschanged-)
 * [`addListener(DensoScannerEvent.ReadData, ...)`](#addlistenerdensoscannereventreaddata-)
 * [Interfaces](#interfaces)
@@ -41,19 +43,19 @@ Download DENSOScannerSDK.framework from the DENSO website and place it in the fo
 <docgen-api>
 <!--Update the source file JSDoc comments and rerun docgen to update the docs below-->
 
-### initialize()
+### attach()
 
 ```typescript
-initialize() => Promise<void>
+attach() => Promise<void>
 ```
 
 --------------------
 
 
-### destroy()
+### detach()
 
 ```typescript
-destroy() => Promise<void>
+detach() => Promise<void>
 ```
 
 --------------------
@@ -73,6 +75,30 @@ startRead() => Promise<void>
 ```typescript
 stopRead() => Promise<void>
 ```
+
+--------------------
+
+
+### getSettings()
+
+```typescript
+getSettings() => Promise<DensoScannerSettings>
+```
+
+**Returns:** <code>Promise&lt;<a href="#densoscannersettings">DensoScannerSettings</a>&gt;</code>
+
+--------------------
+
+
+### setSettings(...)
+
+```typescript
+setSettings(options: DensoScannerSettings) => Promise<void>
+```
+
+| Param         | Type                                                                  |
+| ------------- | --------------------------------------------------------------------- |
+| **`options`** | <code><a href="#densoscannersettings">DensoScannerSettings</a></code> |
 
 --------------------
 
@@ -112,6 +138,16 @@ addListener(eventName: DensoScannerEvent.ReadData, listenerFunc: (event: ReadDat
 ### Interfaces
 
 
+#### DensoScannerSettings
+
+| Prop                 | Type                                                                          |
+| -------------------- | ----------------------------------------------------------------------------- |
+| **`triggerMode`**    | <code><a href="#densoscannertriggermode">DensoScannerTriggerMode</a></code>   |
+| **`powerLevelRead`** | <code>number</code>                                                           |
+| **`session`**        | <code>number</code>                                                           |
+| **`polarization`**   | <code><a href="#densoscannerpolarization">DensoScannerPolarization</a></code> |
+
+
 #### PluginListenerHandle
 
 | Prop         | Type                                      |
@@ -139,6 +175,26 @@ addListener(eventName: DensoScannerEvent.ReadData, listenerFunc: (event: ReadDat
 
 
 ### Enums
+
+
+#### DensoScannerTriggerMode
+
+| Members                             | Value                                        |
+| ----------------------------------- | -------------------------------------------- |
+| **`RFID_TRIGGER_MODE_AUTO_OFF`**    | <code>'RFID_TRIGGER_MODE_AUTO_OFF'</code>    |
+| **`RFID_TRIGGER_MODE_MOMENTARY`**   | <code>'RFID_TRIGGER_MODE_MOMENTARY'</code>   |
+| **`RFID_TRIGGER_MODE_ALTERNATE`**   | <code>'RFID_TRIGGER_MODE_ALTERNATE'</code>   |
+| **`RFID_TRIGGER_MODE_CONTINUOUS1`** | <code>'RFID_TRIGGER_MODE_CONTINUOUS1'</code> |
+| **`RFID_TRIGGER_MODE_CONTINUOUS2`** | <code>'RFID_TRIGGER_MODE_CONTINUOUS2'</code> |
+
+
+#### DensoScannerPolarization
+
+| Members                 | Value                            |
+| ----------------------- | -------------------------------- |
+| **`POLARIZATION_V`**    | <code>'POLARIZATION_V'</code>    |
+| **`POLARIZATION_H`**    | <code>'POLARIZATION_H'</code>    |
+| **`POLARIZATION_BOTH`** | <code>'POLARIZATION_BOTH'</code> |
 
 
 #### DensoScannerEvent
