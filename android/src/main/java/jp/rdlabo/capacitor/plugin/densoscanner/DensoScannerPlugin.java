@@ -36,6 +36,8 @@ import java.util.List;
                                Manifest.permission.BLUETOOTH_ADMIN,
                                Manifest.permission.BLUETOOTH_CONNECT,
                                Manifest.permission.BLUETOOTH_SCAN,
+                               Manifest.permission.ACCESS_COARSE_LOCATION,
+                               Manifest.permission.ACCESS_FINE_LOCATION,
                        }
                ),
        }
@@ -66,6 +68,7 @@ public class DensoScannerPlugin extends Plugin implements ScannerAcceptStatusLis
                     getActivity()
                             .runOnUiThread(() -> {
                                 try {
+                                    Log.d("denso", "Try connect to " + scanner.getBTLocalName());
                                     scanner.claim();
                                 } catch (CommException e) {
                                     Log.d("denso", "Exception " + e.getMessage());
