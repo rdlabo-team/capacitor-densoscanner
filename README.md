@@ -35,7 +35,6 @@ Download DENSOScannerSDK.aar from the DENSO website and place it in the followin
 
 * [`attach()`](#attach)
 * [`detach()`](#detach)
-* [`openRead()`](#openread)
 * [`openInventory()`](#openinventory)
 * [`pullData()`](#pulldata)
 * [`close()`](#close)
@@ -64,15 +63,6 @@ attach() => Promise<void>
 
 ```typescript
 detach() => Promise<void>
-```
-
---------------------
-
-
-### openRead()
-
-```typescript
-openRead() => Promise<void>
 ```
 
 --------------------
@@ -119,12 +109,14 @@ getSettings() => Promise<DensoScannerSettings>
 ### setSettings(...)
 
 ```typescript
-setSettings(options: DensoScannerSettings) => Promise<void>
+setSettings(options: DensoScannerSettings) => Promise<DensoScannerSettings>
 ```
 
 | Param         | Type                                                                  |
 | ------------- | --------------------------------------------------------------------- |
 | **`options`** | <code><a href="#densoscannersettings">DensoScannerSettings</a></code> |
+
+**Returns:** <code>Promise&lt;<a href="#densoscannersettings">DensoScannerSettings</a>&gt;</code>
 
 --------------------
 

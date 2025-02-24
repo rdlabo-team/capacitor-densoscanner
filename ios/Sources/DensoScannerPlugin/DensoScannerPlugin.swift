@@ -72,39 +72,6 @@ public class DensoScannerPlugin: CAPPlugin, CAPBridgedPlugin, ScannerAcceptStatu
         call.resolve([:]);
     }
     
-    @objc func openRead(_ call: CAPPluginCall) {
-        guard let rfidScanner = rfidScanner else {
-            call.reject("scanner not connected")
-            return;
-        }
-        
-        if (!isOpen) {
-            isOpen = true
-            rfidScanner.setDataDelegate(delegate: self)
-            
-            let address = Int16(0)
-            let pass = "00000000"
-            var error: NSError? = nil
-            
-            guard let password = implementation.stringToBytes(pass), let uii = implementation.stringToBytes("") else {
-                call.reject("scanner not connected")
-                return;
-            }
-            
-            rfidScanner.openRead(.RFID_BANK_UII,
-                             addr: address,
-                             size: Int16(Data(uii).count),
-                             pwd: Data(password),
-                             uii: Data(uii),
-                             error: &error)
-            
-            call.resolve()
-        } else {
-            // すでに読み込みを開始しているため、何もせずにresolveを返す
-            call.resolve()
-        }
-    }
-    
     @objc func openInventory(_ call: CAPPluginCall) {
         guard let rfidScanner = rfidScanner else {
             call.reject("scanner not connected")

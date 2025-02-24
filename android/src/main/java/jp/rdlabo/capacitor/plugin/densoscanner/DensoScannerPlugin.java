@@ -28,16 +28,25 @@ public class DensoScannerPlugin extends Plugin implements ScannerAcceptStatusLis
         if (!isCommScanner()) {
             CommManager.addAcceptStatusListener(this);
             CommManager.startAccept();
-            // TODO: 接続待ちスタート
         }
+        call.resolve();
     }
 
     @PluginMethod
     public void detach(PluginCall call) {
-    }
-
-    @PluginMethod
-    public void openRead(PluginCall call) {
+        if (commScanner != null) {
+            try {
+                commScanner.close();
+                commScanner.removeStatusListener(this);
+                scannerConnected = false;
+                commScanner = null;
+                call.resolve();
+            } catch (CommException e) {
+                call.reject(e.getLocalizedMessage());
+            }
+        } else {
+            call.resolve();
+        }
     }
 
     @PluginMethod
@@ -72,7 +81,7 @@ public class DensoScannerPlugin extends Plugin implements ScannerAcceptStatusLis
             mCommScanner.claim();
             // Abort the connection request
             CommManager.endAccept();
-            CommManager.removeAcceptStatusListener(DensoScannerPlugin.this);
+            CommManager.removeAcceptStatusListener(this);
             successFlag = true;
         } catch (CommException e) {
             e.printStackTrace();
