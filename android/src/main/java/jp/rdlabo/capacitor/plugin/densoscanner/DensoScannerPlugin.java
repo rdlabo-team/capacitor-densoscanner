@@ -4,7 +4,10 @@ import android.util.Log;
 
 import com.densowave.scannersdk.Common.CommStatusChangedEvent;
 import com.densowave.scannersdk.Const.CommConst;
+import com.densowave.scannersdk.Dto.BarcodeScannerSettings;
+import com.densowave.scannersdk.Dto.RFIDScannerSettings;
 import com.densowave.scannersdk.Listener.ScannerStatusListener;
+import com.densowave.scannersdk.RFID.RFIDException;
 import com.getcapacitor.JSObject;
 import com.getcapacitor.Plugin;
 import com.getcapacitor.PluginCall;
@@ -105,10 +108,57 @@ public class DensoScannerPlugin extends Plugin implements ScannerAcceptStatusLis
 
     @PluginMethod
     public void getSettings(PluginCall call) {
+        if (commScanner == null) {
+            call.reject("scanner not connected");
+            return;
+        }
+
+
+        try {
+            RFIDScannerSettings settings = commScanner.getRFIDScanner().getSettings();
+            call.resolve(implementation.createSettingsResponse(settings));
+        } catch (Exception e) {
+            call.reject(e.getLocalizedMessage());
+        }
     }
 
     @PluginMethod
     public void setSettings(PluginCall call) {
+        if (commScanner == null) {
+            call.reject("scanner not connected");
+            return;
+        }
+
+        try {
+            RFIDScannerSettings settings = commScanner.getRFIDScanner().getSettings();
+
+            if (call.getString("triggerMode") != null) {
+                settings.scan.triggerMode = TriggerModeMapper.fromString(call.getString("triggerMode"));
+            }
+
+            if (call.getInt("powerLevelRead") != null) {
+                settings.scan.powerLevelRead = call.getInt("powerLevelRead");
+            }
+
+            if (call.getInt("session") != null) {
+                settings.scan.sessionFlag = switch (call.getInt("session")) {
+                    case 0 -> RFIDScannerSettings.Scan.SessionFlag.S0;
+                    case 1 -> RFIDScannerSettings.Scan.SessionFlag.S1;
+                    case 2 -> RFIDScannerSettings.Scan.SessionFlag.S2;
+                    default -> RFIDScannerSettings.Scan.SessionFlag.S0;
+                };
+            }
+
+            if (call.getString("polarization") != null) {
+                settings.scan.polarization = DensoScannerPolarizationMapper.fromString(call.getString("polarization"));
+            }
+
+            commScanner.getRFIDScanner().setSettings(settings);
+            call.resolve(implementation.createSettingsResponse(settings));
+            
+        } catch (RFIDException e) {
+            call.reject(e.getLocalizedMessage());
+        }
     }
 
     public CommScanner getCommScanner() {
@@ -118,13 +168,11 @@ public class DensoScannerPlugin extends Plugin implements ScannerAcceptStatusLis
 
     @Override
     public void OnScannerAppeared(CommScanner mCommScanner) {
-        boolean successFlag = false;
         try {
             mCommScanner.claim();
             // Abort the connection request
             CommManager.endAccept();
             CommManager.removeAcceptStatusListener(this);
-            successFlag = true;
         } catch (CommException e) {
             e.printStackTrace();
         }
@@ -132,9 +180,6 @@ public class DensoScannerPlugin extends Plugin implements ScannerAcceptStatusLis
         try {
             setConnectedCommScanner(mCommScanner);
             commScanner = getCommScanner();
-            if (successFlag) {
-                // TODO: 接続成功をListenerで通知
-            }
         } catch (Exception e) {
             Log.d("denso", "Exception " + e.getMessage());
         }
@@ -143,8 +188,15 @@ public class DensoScannerPlugin extends Plugin implements ScannerAcceptStatusLis
     @Override
     public void onScannerStatusChanged(CommScanner scanner, CommStatusChangedEvent state) {
         CommConst.ScannerStatus scannerStatus = state.getStatus();
-        if (scannerStatus.equals(CommConst.ScannerStatus.CLOSE_WAIT)) {
-            // TODO: ステータスの変更をイベントで通知
+
+        if (scannerStatus.equals(CommConst.ScannerStatus.CLAIMED)) {
+            this.notifyListeners(DensoScannerStatusEvents.SCANNER_STATUS_CLAIMED.getStatus(), new JSObject());
+        } else if (scannerStatus.equals(CommConst.ScannerStatus.CLOSE_WAIT)) {
+            this.notifyListeners(DensoScannerStatusEvents.SCANNER_STATUS_CLOSE_WAIT.getStatus(), new JSObject());
+        } else if (scannerStatus.equals(CommConst.ScannerStatus.CLOSED)) {
+            this.notifyListeners(DensoScannerStatusEvents.SCANNER_STATUS_CLOSED.getStatus(), new JSObject());
+        } else {
+            this.notifyListeners(DensoScannerStatusEvents.SCANNER_STATUS_UNKNOWN.getStatus(), new JSObject());
         }
     }
 
