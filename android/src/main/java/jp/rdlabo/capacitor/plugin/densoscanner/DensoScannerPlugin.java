@@ -20,6 +20,7 @@ import com.densowave.scannersdk.Listener.ScannerAcceptStatusListener;
 public class DensoScannerPlugin extends Plugin implements ScannerAcceptStatusListener, ScannerStatusListener {
     public static CommScanner commScanner;
     public static boolean scannerConnected = false;
+    public static boolean isOpened = false;
 
     private DensoScanner implementation = new DensoScanner();
 
@@ -51,14 +52,55 @@ public class DensoScannerPlugin extends Plugin implements ScannerAcceptStatusLis
 
     @PluginMethod
     public void openInventory(PluginCall call) {
+        if (commScanner == null) {
+            call.reject("scanner not connected");
+            return;
+        }
+        if (!isOpened) {
+            try {
+                isOpened = true;
+                commScanner.getRFIDScanner().openInventory();
+                call.resolve();
+            } catch (Exception e) {
+                call.reject(e.getLocalizedMessage());
+            }
+        } else {
+            call.resolve();
+        }
     }
 
     @PluginMethod
     public void pullData(PluginCall call) {
+        if (commScanner == null) {
+            call.reject("scanner not connected");
+            return;
+        }
+        if (!isOpened) {
+            try {
+                isOpened = true;
+                commScanner.getRFIDScanner().pullData(1);
+                call.resolve();
+            } catch (Exception e) {
+                call.reject(e.getLocalizedMessage());
+            }
+        } else {
+            call.resolve();
+        }
     }
 
     @PluginMethod
     public void close(PluginCall call) {
+        if (isOpened) {
+            try {
+                isOpened = false;
+                commScanner.getRFIDScanner().close();
+                call.resolve();
+            } catch (Exception e) {
+                call.reject(e.getLocalizedMessage());
+            }
+        } else {
+            call.resolve();
+        }
     }
 
     @PluginMethod
