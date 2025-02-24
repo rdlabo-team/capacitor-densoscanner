@@ -15,7 +15,9 @@ public class DensoScannerPlugin: CAPPlugin, CAPBridgedPlugin, ScannerAcceptStatu
         CAPPluginMethod(name: "initialize", returnType: CAPPluginReturnPromise),
         CAPPluginMethod(name: "destroy", returnType: CAPPluginReturnPromise),
         CAPPluginMethod(name: "startRead", returnType: CAPPluginReturnPromise),
-        CAPPluginMethod(name: "stopRead", returnType: CAPPluginReturnPromise)
+        CAPPluginMethod(name: "stopRead", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "getSettings", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "setSettings", returnType: CAPPluginReturnPromise)
     ]
     private let implementation = DensoScanner()
     
