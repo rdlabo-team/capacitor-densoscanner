@@ -38,7 +38,7 @@ import DENSOScannerSDK
     
     func receiveCommScannerSettings(settings: RFIDScannerSettings) -> JSObject {
         
-        let triggerMode: String = switch settings!.scan.triggerMode {
+        let triggerMode: String = switch settings.scan.triggerMode {
             case .RFID_TRIGGER_MODE_AUTO_OFF:
                 DensoScannerTriggerMode.RFID_TRIGGER_MODE_AUTO_OFF.rawValue
             case .RFID_TRIGGER_MODE_MOMENTARY:
@@ -51,7 +51,7 @@ import DENSOScannerSDK
                 DensoScannerTriggerMode.RFID_TRIGGER_MODE_CONTINUOUS2.rawValue
             }
         
-        let session: Int = switch settings!.scan.sessionFlag {
+        let session: Int = switch settings.scan.sessionFlag {
         case SessionFlag.SESSION_FLAG_S0:
             0
         case SessionFlag.SESSION_FLAG_S1:
@@ -65,9 +65,9 @@ import DENSOScannerSDK
         
         return [
             "triggerMode": triggerMode,
-            "powerLevelRead": Int(settings!.scan.powerLevelRead),
+            "powerLevelRead": Int(settings.scan.powerLevelRead),
             "session": session,
-            "polarization": settings!.scan.polarization.des()
+            "polarization": settings.scan.polarization.des()
         ]
     }
 }
