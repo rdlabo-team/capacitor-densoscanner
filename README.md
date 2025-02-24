@@ -29,8 +29,10 @@ Download DENSOScannerSDK.framework from the DENSO website and place it in the fo
 
 * [`attach()`](#attach)
 * [`detach()`](#detach)
-* [`startRead()`](#startread)
-* [`stopRead()`](#stopread)
+* [`openRead()`](#openread)
+* [`openInventory()`](#openinventory)
+* [`pullData()`](#pulldata)
+* [`close()`](#close)
 * [`getSettings()`](#getsettings)
 * [`setSettings(...)`](#setsettings)
 * [`addListener(DensoScannerEvent.OnScannerStatusChanged, ...)`](#addlistenerdensoscannereventonscannerstatuschanged-)
@@ -61,19 +63,37 @@ detach() => Promise<void>
 --------------------
 
 
-### startRead()
+### openRead()
 
 ```typescript
-startRead() => Promise<void>
+openRead() => Promise<void>
 ```
 
 --------------------
 
 
-### stopRead()
+### openInventory()
 
 ```typescript
-stopRead() => Promise<void>
+openInventory() => Promise<void>
+```
+
+--------------------
+
+
+### pullData()
+
+```typescript
+pullData() => Promise<void>
+```
+
+--------------------
+
+
+### close()
+
+```typescript
+close() => Promise<void>
 ```
 
 --------------------

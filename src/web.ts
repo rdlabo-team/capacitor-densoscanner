@@ -10,11 +10,17 @@ export class DensoScannerWeb extends WebPlugin implements DensoScannerPlugin {
   async detach(): Promise<void> {
     console.log('detach');
   }
-  async startRead(): Promise<void> {
-    console.log('startScan');
+  async openRead(): Promise<void> {
+    console.log('openRead');
   }
-  async stopRead(): Promise<void> {
+  async openInventory(): Promise<void> {
+    console.log('openInventory');
+  }
+  async close(): Promise<void> {
     console.log('stopScan');
+  }
+  async pullData(): Promise<void> {
+    console.log('pullData');
   }
   async getSettings(): Promise<DensoScannerSettings> {
     return {
