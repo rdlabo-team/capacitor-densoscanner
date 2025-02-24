@@ -17,11 +17,17 @@ This project must be built and used locally due to the DENSO license.
 
 Download DENSOScannerSDK.framework from the DENSO website and place it in the following path. Note that the configuration under DENSOScannerSDK.framework is the default configuration.
 
-- ios/Sources/DENSOScannerSDK.framework
+- [THIS PLUGIN]ios/Sources/DENSOScannerSDK.framework
   - Headers/
   - Modules/
   - DENSOScannerSDK
   - Info.plist
+
+### Android
+
+Download DENSOScannerSDK.aar from the DENSO website and place it in the following path. Note that the configuration under DENSOScannerSDK.aar is the default configuration. 
+
+- [YOUR CAPACITOR PROJECT]android/DENSOScannerSDK/DENSOScannerSDK.aar
 
 ## API
 
