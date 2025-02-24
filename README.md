@@ -23,6 +23,11 @@ Download DENSOScannerSDK.framework from the DENSO website and place it in the fo
   - DENSOScannerSDK
   - Info.plist
 
+And update the following files: Info.plist
+
+- Supported external accessory protocols
+  - com.denso-wave.scanner
+
 ### Android
 
 Download DENSOScannerSDK.aar from the DENSO website and place it in the following path. Note that the configuration under DENSOScannerSDK.aar is the default configuration. 
@@ -35,6 +40,14 @@ And update the following files: variables.gradle
 ext {
     minSdkVersion = 23
     compileSdkVersion = 35
+```
+
+And update the following files: AndroidManifest.xml
+
+```xml
+    <uses-permission android:name="android.permission.BLUETOOTH" />
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+    <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
 ```
 
 ## API

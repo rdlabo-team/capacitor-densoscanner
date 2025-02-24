@@ -1,5 +1,6 @@
 package jp.rdlabo.capacitor.plugin.densoscanner;
 
+import android.Manifest;
 import android.util.Log;
 
 import com.densowave.scannersdk.Common.CommStatusChangedEvent;
@@ -9,6 +10,7 @@ import com.densowave.scannersdk.Dto.RFIDScannerSettings;
 import com.densowave.scannersdk.Listener.ScannerStatusListener;
 import com.densowave.scannersdk.RFID.RFIDException;
 import com.getcapacitor.JSObject;
+import com.getcapacitor.PermissionState;
 import com.getcapacitor.Plugin;
 import com.getcapacitor.PluginCall;
 import com.getcapacitor.PluginMethod;
@@ -18,8 +20,23 @@ import com.densowave.scannersdk.Common.CommException;
 import com.densowave.scannersdk.Common.CommManager;
 import com.densowave.scannersdk.Common.CommScanner;
 import com.densowave.scannersdk.Listener.ScannerAcceptStatusListener;
+import com.getcapacitor.annotation.Permission;
+import com.getcapacitor.annotation.PermissionCallback;
 
-@CapacitorPlugin(name = "DensoScanner")
+@CapacitorPlugin(
+        name = "DensoScanner",
+       permissions = {
+               @Permission(
+                       alias = "bluetooth",
+                       strings = {
+                               Manifest.permission.BLUETOOTH,
+                               Manifest.permission.BLUETOOTH_ADMIN,
+                               Manifest.permission.BLUETOOTH_CONNECT,
+                               Manifest.permission.BLUETOOTH_SCAN,
+                       }
+               ),
+       }
+)
 public class DensoScannerPlugin extends Plugin implements ScannerAcceptStatusListener, ScannerStatusListener {
     public static CommScanner commScanner;
     public static boolean scannerConnected = false;
@@ -29,9 +46,15 @@ public class DensoScannerPlugin extends Plugin implements ScannerAcceptStatusLis
 
     @PluginMethod
     public void attach(PluginCall call) {
+        if (!isBluetoothPermissionGranted()) {
+            requestPermissionForAlias("bluetooth", call, "permissionCallback");
+            return;
+        }
+
         if (!isCommScanner()) {
             CommManager.addAcceptStatusListener(this);
             CommManager.startAccept();
+            Log.d("denso", "startAccept");
         }
         call.resolve();
     }
@@ -168,6 +191,7 @@ public class DensoScannerPlugin extends Plugin implements ScannerAcceptStatusLis
 
     @Override
     public void OnScannerAppeared(CommScanner mCommScanner) {
+        Log.d("denso", "OnScannerAppeared");
         try {
             mCommScanner.claim();
             // Abort the connection request
@@ -187,6 +211,7 @@ public class DensoScannerPlugin extends Plugin implements ScannerAcceptStatusLis
 
     @Override
     public void onScannerStatusChanged(CommScanner scanner, CommStatusChangedEvent state) {
+        Log.d("denso", "onScannerStatusChanged");
         CommConst.ScannerStatus scannerStatus = state.getStatus();
 
         if (scannerStatus.equals(CommConst.ScannerStatus.CLAIMED)) {
@@ -216,6 +241,19 @@ public class DensoScannerPlugin extends Plugin implements ScannerAcceptStatusLis
             }
         }
         commScanner = connectedCommScanner;
+    }
+
+    private Boolean isBluetoothPermissionGranted()  {
+        return getPermissionState("bluetooth") == PermissionState.GRANTED;
+    }
+
+    @PermissionCallback
+    private void permissionCallback(PluginCall call) {
+        if (getPermissionState("bluetooth") == PermissionState.GRANTED) {
+            attach(call);
+        } else {
+            call.reject("Permission is required to use bluetooth");
+        }
     }
 }
 
