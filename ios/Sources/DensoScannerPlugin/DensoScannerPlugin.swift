@@ -169,8 +169,6 @@ public class DensoScannerPlugin: CAPPlugin, CAPBridgedPlugin, ScannerAcceptStatu
     }
     
     @objc func getSettings(_ call: CAPPluginCall) {
-        var dataSetStruct = SettingDataSet.init()
-        
         guard let scanner = commScanner else {
             call.reject("scanner not connected")
             return
