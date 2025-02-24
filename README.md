@@ -29,6 +29,14 @@ Download DENSOScannerSDK.aar from the DENSO website and place it in the followin
 
 - [YOUR CAPACITOR PROJECT]android/DENSOScannerSDK/DENSOScannerSDK.aar
 
+And update the following files: variables.gradle
+
+```gradle
+ext {
+    minSdkVersion = 23
+    compileSdkVersion = 35
+```
+
 ## API
 
 <docgen-index>
