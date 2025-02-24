@@ -168,6 +168,29 @@ public class DensoScannerPlugin: CAPPlugin, CAPBridgedPlugin, ScannerAcceptStatu
         call.resolve()
     }
     
+    @objc func getSettings(_ call: CAPPluginCall) {
+        var dataSetStruct = SettingDataSet.init()
+        
+        guard let scanner = commScanner else {
+            call.reject("scanner not connected")
+            return
+        }
+        
+        var error: NSError? = nil
+        
+        // Get scanner setting value
+        // If the error is not output, the obtained value is treated as not nil
+        let settings = scanner.getRFIDScanner().getSettings(&error)
+        if (error != nil) {
+            call.reject(error!.localizedDescription)
+            return
+        }
+        call.resolve(implementation.receiveCommScannerSettings(settings: settings!))
+    }
+    
+    @objc func setSettings(_ call: CAPPluginCall) {
+        
+    }
     
     public func OnScannerAppeared(scanner: CommScanner!) {
         let scannerSetup = implementation.setupScanner(scanner: scanner)
