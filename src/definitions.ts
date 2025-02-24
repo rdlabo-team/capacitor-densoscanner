@@ -55,7 +55,7 @@ export enum DensoScannerPolarization {
 }
 
 export interface DensoScannerSettings {
-  triggerMode: DensoScannerTriggerMode;  // default: 'RFID_TRIGGER_MODE_CONTINUOUS1'
+  triggerMode: DensoScannerTriggerMode; // default: 'RFID_TRIGGER_MODE_CONTINUOUS1'
   powerLevelRead: number; // default: 30 / 4 - 30
   session: number; // default: 0 / 0 - 3
   polarization: DensoScannerPolarization; // default: 'POLARIZATION_BOTH

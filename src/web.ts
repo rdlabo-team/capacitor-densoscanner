@@ -1,7 +1,7 @@
 import { WebPlugin } from '@capacitor/core';
 
-import type { DensoScannerPlugin , DensoScannerSettings} from './definitions';
-import {DensoScannerPolarization, DensoScannerTriggerMode} from './definitions';
+import type { DensoScannerPlugin, DensoScannerSettings } from './definitions';
+import { DensoScannerPolarization, DensoScannerTriggerMode } from './definitions';
 
 export class DensoScannerWeb extends WebPlugin implements DensoScannerPlugin {
   async attach(): Promise<void> {

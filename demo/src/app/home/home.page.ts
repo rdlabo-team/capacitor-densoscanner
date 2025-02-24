@@ -1,8 +1,8 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
-import {IonHeader, IonToolbar, IonTitle, IonContent, IonList, IonItem, IonLabel} from '@ionic/angular/standalone';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { IonHeader, IonToolbar, IonTitle, IonContent, IonList, IonItem, IonLabel } from '@ionic/angular/standalone';
 import { DensoScanner } from '@rdlabo/capacitor-densoscanner';
-import {DensoScannerEvent, DensoScannerPolarization, DensoScannerTriggerMode} from '../../../../src';
-import {PluginListenerHandle} from '@capacitor/core';
+import { DensoScannerEvent, DensoScannerPolarization, DensoScannerTriggerMode } from '../../../../src';
+import { PluginListenerHandle } from '@capacitor/core';
 
 @Component({
   selector: 'app-home',
@@ -15,12 +15,16 @@ export class HomePage implements OnInit, OnDestroy {
   constructor() {}
 
   async ngOnInit() {
-    this.listenerHandles.push(await DensoScanner.addListener(DensoScannerEvent.OnScannerStatusChanged, (event) => {
-      console.dir(event);
-    }));
-    this.listenerHandles.push(await DensoScanner.addListener(DensoScannerEvent.ReadData, (event) => {
-      console.dir(event);
-    }));
+    this.listenerHandles.push(
+      await DensoScanner.addListener(DensoScannerEvent.OnScannerStatusChanged, (event) => {
+        console.dir(event);
+      }),
+    );
+    this.listenerHandles.push(
+      await DensoScanner.addListener(DensoScannerEvent.ReadData, (event) => {
+        console.dir(event);
+      }),
+    );
   }
 
   ngOnDestroy() {
