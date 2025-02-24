@@ -6,6 +6,7 @@ import android.util.Log;
 import com.densowave.scannersdk.Common.CommStatusChangedEvent;
 import com.densowave.scannersdk.Const.CommConst;
 import com.densowave.scannersdk.Dto.BarcodeScannerSettings;
+import com.densowave.scannersdk.Dto.CommScannerBtSettings;
 import com.densowave.scannersdk.Dto.RFIDScannerSettings;
 import com.densowave.scannersdk.Listener.ScannerStatusListener;
 import com.densowave.scannersdk.RFID.RFIDException;
@@ -23,8 +24,10 @@ import com.densowave.scannersdk.Listener.ScannerAcceptStatusListener;
 import com.getcapacitor.annotation.Permission;
 import com.getcapacitor.annotation.PermissionCallback;
 
+import java.util.List;
+
 @CapacitorPlugin(
-        name = "DensoScanner",
+       name = "DensoScanner",
        permissions = {
                @Permission(
                        alias = "bluetooth",
@@ -51,12 +54,38 @@ public class DensoScannerPlugin extends Plugin implements ScannerAcceptStatusLis
             return;
         }
 
-        if (!isCommScanner()) {
+        if (isCommScanner()) {
+            call.resolve();
+            return;
+        }
+
+        List<CommScanner> listCommScanner = CommManager.getScanners();
+        if (listCommScanner != null) {
+            for (CommScanner scanner: listCommScanner) {
+                if (scanner.getBTLocalName().contains("SP1")) {
+                    getActivity()
+                            .runOnUiThread(() -> {
+                                try {
+                                    scanner.claim();
+                                } catch (CommException e) {
+                                    Log.d("denso", "Exception " + e.getMessage());
+                                    e.printStackTrace();
+                                }
+                            });
+
+                    scannerConnected = true;
+                    commScanner = scanner;
+
+                    break;
+                }
+            }
+        }
+
+        if (!scannerConnected) {
             CommManager.addAcceptStatusListener(this);
             CommManager.startAccept();
             Log.d("denso", "startAccept");
         }
-        call.resolve();
     }
 
     @PluginMethod
