@@ -9,7 +9,7 @@ export interface DensoScannerPlugin {
   close(): Promise<void>;
 
   getSettings(): Promise<DensoScannerSettings>;
-  setSettings(options: DensoScannerSettings): Promise<void>
+  setSettings(options: DensoScannerSettings): Promise<DensoScannerSettings>;
 
   addListener(
     eventName: DensoScannerEvent.OnScannerStatusChanged,

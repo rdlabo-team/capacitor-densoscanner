@@ -179,6 +179,7 @@ public class DensoScannerPlugin: CAPPlugin, CAPBridgedPlugin, ScannerAcceptStatu
         // Get scanner setting value
         // If the error is not output, the obtained value is treated as not nil
         let settings = scanner.getRFIDScanner().getSettings(&error)
+        
         if (error != nil) {
             call.reject(error!.localizedDescription)
             return
@@ -187,7 +188,76 @@ public class DensoScannerPlugin: CAPPlugin, CAPBridgedPlugin, ScannerAcceptStatu
     }
     
     @objc func setSettings(_ call: CAPPluginCall) {
+        guard let scanner = commScanner else {
+            call.reject("scanner not connected")
+            return
+        }
         
+        var error: NSError? = nil
+        
+        let settings = scanner.getRFIDScanner().getSettings(&error)
+        if (error != nil) {
+            call.reject(error!.localizedDescription)
+            return
+        }
+        
+        if (call.getString("triggerMode") != nil) {
+            settings!.scan.triggerMode = switch call.getString("triggerMode") {
+            case DensoScannerTriggerMode.RFID_TRIGGER_MODE_AUTO_OFF.rawValue:
+                .RFID_TRIGGER_MODE_AUTO_OFF
+            case DensoScannerTriggerMode.RFID_TRIGGER_MODE_MOMENTARY.rawValue:
+                .RFID_TRIGGER_MODE_MOMENTARY
+            case DensoScannerTriggerMode.RFID_TRIGGER_MODE_ALTERNATE.rawValue:
+                .RFID_TRIGGER_MODE_ALTERNATE
+            case DensoScannerTriggerMode.RFID_TRIGGER_MODE_CONTINUOUS1.rawValue:
+                .RFID_TRIGGER_MODE_CONTINUOUS1
+            case DensoScannerTriggerMode.RFID_TRIGGER_MODE_CONTINUOUS2.rawValue:
+                .RFID_TRIGGER_MODE_CONTINUOUS2
+            default:
+                // Handle the default case (e.g., log, throw an error, or assign a default value)
+                .RFID_TRIGGER_MODE_AUTO_OFF  // Example default value
+            }
+        }
+        
+        if (call.getInt("powerLevelRead") != nil) {
+            settings!.scan.powerLevelRead = Int32(call.getInt("powerLevelRead")!)
+        }
+        
+        if (call.getInt("session") != nil) {
+            settings!.scan.sessionFlag = switch call.getInt("session") {
+            case 0:
+                SessionFlag.SESSION_FLAG_S0
+            case 1:
+                SessionFlag.SESSION_FLAG_S1
+            case 2:
+                SessionFlag.SESSION_FLAG_S2
+            case 3:
+                SessionFlag.SESSION_FLAG_S3
+            default:
+                SessionFlag.SESSION_FLAG_S1
+            }
+        }
+        
+        if (call.getString("polarization") != nil) {
+            settings!.scan.polarization = switch call.getString("polarization") {
+            case DensoScannerPolarization.POLARIZATION_V.rawValue:
+                .POLARIZATION_V
+            case DensoScannerPolarization.POLARIZATION_H.rawValue:
+                .POLARIZATION_H
+            case DensoScannerPolarization.POLARIZATION_BOTH.rawValue:
+                .POLARIZATION_BOTH
+            default:
+                .POLARIZATION_BOTH
+            }
+        }
+        
+        scanner.getRFIDScanner().setSettings(settings, error: &error)
+        if (error != nil) {
+            call.reject(error!.localizedDescription)
+            return
+        }
+        
+        call.resolve(implementation.receiveCommScannerSettings(settings: settings!))
     }
     
     public func OnScannerAppeared(scanner: CommScanner!) {
