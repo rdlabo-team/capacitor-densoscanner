@@ -20,6 +20,8 @@ public class DensoScanner {
         };
         response.put("session", session);
 
+        Log.d("denso", response.toString());
+
         return response;
     }
 }

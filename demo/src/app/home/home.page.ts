@@ -39,8 +39,8 @@ export class HomePage implements OnInit, OnDestroy {
     DensoScanner.detach();
   }
 
-  openRead() {
-    DensoScanner.openRead();
+  pullData() {
+    DensoScanner.pullData();
   }
 
   openInventory() {
