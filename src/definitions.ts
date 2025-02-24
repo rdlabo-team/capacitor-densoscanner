@@ -31,7 +31,14 @@ export interface ReadDataEvent {
  *  - SCANNER_STATUS_UNKNOWN: 不明な状態です
  */
 export interface OnScannerStatusChangedEvent {
-  status: 'SCANNER_STATUS_CLAIMED' | 'SCANNER_STATUS_CLOSE_WAIT' | 'SCANNER_STATUS_CLOSED' | 'SCANNER_STATUS_UNKNOWN';
+  status: DensoOnScannerStatusChangedEvent;
+}
+
+export enum DensoOnScannerStatusChangedEvent {
+  SCANNER_STATUS_CLAIMED = 'SCANNER_STATUS_CLAIMED',
+  SCANNER_STATUS_CLOSE_WAIT = 'SCANNER_STATUS_CLOSE_WAIT',
+  SCANNER_STATUS_CLOSED = 'SCANNER_STATUS_CLOSED',
+  SCANNER_STATUS_UNKNOWN = 'SCANNER_STATUS_UNKNOWN',
 }
 
 export enum DensoScannerEvent {

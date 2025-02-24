@@ -10,4 +10,8 @@ export const routes: Routes = [
     redirectTo: 'home',
     pathMatch: 'full',
   },
+  {
+    path: 'reader',
+    loadComponent: () => import('./reader/reader.page').then( m => m.ReaderPage)
+  },
 ];

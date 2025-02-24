@@ -201,16 +201,16 @@ addListener(eventName: DensoScannerEvent.ReadData, listenerFunc: (event: ReadDat
 - SCANNER_STATUS_CLOSED:  スキャナが解放されました
 - SCANNER_STATUS_UNKNOWN: 不明な状態です
 
-| Prop         | Type                                                                                                                        |
-| ------------ | --------------------------------------------------------------------------------------------------------------------------- |
-| **`status`** | <code>'SCANNER_STATUS_CLAIMED' \| 'SCANNER_STATUS_CLOSE_WAIT' \| 'SCANNER_STATUS_CLOSED' \| 'SCANNER_STATUS_UNKNOWN'</code> |
+| Prop         | Type                                                                                          |
+| ------------ | --------------------------------------------------------------------------------------------- |
+| **`status`** | <code><a href="#densoonscannerstatuschangedevent">DensoOnScannerStatusChangedEvent</a></code> |
 
 
 #### ReadDataEvent
 
-| Prop       | Type                |
-| ---------- | ------------------- |
-| **`code`** | <code>string</code> |
+| Prop        | Type                  |
+| ----------- | --------------------- |
+| **`codes`** | <code>string[]</code> |
 
 
 ### Enums
@@ -242,5 +242,15 @@ addListener(eventName: DensoScannerEvent.ReadData, listenerFunc: (event: ReadDat
 | ---------------------------- | ------------------------------------- |
 | **`OnScannerStatusChanged`** | <code>'OnScannerStatusChanged'</code> |
 | **`ReadData`**               | <code>'ReadData'</code>               |
+
+
+#### DensoOnScannerStatusChangedEvent
+
+| Members                         | Value                                    |
+| ------------------------------- | ---------------------------------------- |
+| **`SCANNER_STATUS_CLAIMED`**    | <code>'SCANNER_STATUS_CLAIMED'</code>    |
+| **`SCANNER_STATUS_CLOSE_WAIT`** | <code>'SCANNER_STATUS_CLOSE_WAIT'</code> |
+| **`SCANNER_STATUS_CLOSED`**     | <code>'SCANNER_STATUS_CLOSED'</code>     |
+| **`SCANNER_STATUS_UNKNOWN`**    | <code>'SCANNER_STATUS_UNKNOWN'</code>    |
 
 </docgen-api>

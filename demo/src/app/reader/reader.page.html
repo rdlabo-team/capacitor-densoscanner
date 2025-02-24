@@ -1,0 +1,16 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button>Close</ion-button>
+    </ion-buttons>
+    <ion-title>Reader</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-list>
+    @for (item of readerService.codes(); track item) {
+      <ion-item><ion-label>{{item}}</ion-label></ion-item>
+    }
+  </ion-list>
+</ion-content>
