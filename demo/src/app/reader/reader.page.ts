@@ -28,5 +28,4 @@ export class ReaderPage implements OnInit {
 
   ngOnInit() {
   }
-
 }

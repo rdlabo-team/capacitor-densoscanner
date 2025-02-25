@@ -21,32 +21,36 @@ public class DensoScannerPlugin: CAPPlugin, CAPBridgedPlugin, ScannerAcceptStatu
         CAPPluginMethod(name: "getSettings", returnType: CAPPluginReturnPromise),
         CAPPluginMethod(name: "setSettings", returnType: CAPPluginReturnPromise)
     ]
-    private let implementation = DensoScanner()
     
-    private var scannerConnected: Bool = false
-    private var isOpen: Bool = false
-    private(set) var commScanner: CommScanner? = nil
-    private(set) var rfidScanner: RFIDScanner? = nil
+    private let implementation = DensoScanner()
+    public var scannerConnected: Bool = false
+    public var isOpen: Bool = false
+    public var commScanner: CommScanner? = nil
+    public var rfidScanner: RFIDScanner? = nil
+    
+    override public func load(){
+        super.load()
+        self.implementation.plugin = self
+    }
 
     @objc func attach(_ call: CAPPluginCall) {
         guard let scanners = CommManager.getScanners() else {
             CommManager.sharedInstance().addAcceptStatusListener(listener: self)
             return
         }
-
+        
         for scanner in scanners {
+            print(scanner.getBTLocalName())
             if implementation.setupScanner(scanner: scanner) {
                 if let model = scanner.getBTLocalName(), model.contains(AppConstant.deviceSP1) {
-                    scannerConnected = true
-                    commScanner = scanner
-                    rfidScanner = scanner.getRFIDScanner()
-                    notifyListeners(DensoScannerStatusEvents.SCANNER_STATUS_CLAIMED.rawValue, data: [:])
-                    scanner.addStatusListener(self)
                     break
+                } else {
+                    // 目的のデバイスでないため解除
+                    self.detach(call)
                 }
             }
         }
-
+        
         if !scannerConnected {
             CommManager.sharedInstance().addAcceptStatusListener(listener: self)
         }
@@ -243,12 +247,6 @@ public class DensoScannerPlugin: CAPPlugin, CAPBridgedPlugin, ScannerAcceptStatu
         
         CommManager.sharedInstance().endAccept()
         CommManager.sharedInstance().removeAcceptStatusListener(listener: self)
-        
-        scannerConnected = true
-        commScanner = scanner
-        rfidScanner = scanner.getRFIDScanner()
-        notifyListeners(DensoScannerStatusEvents.SCANNER_STATUS_CLAIMED.rawValue, data: [:])
-        scanner.addStatusListener(self)
     }
     
     public func OnRFIDDataReceived(scanner: CommScanner!, rfidEvent: RFIDDataReceivedEvent!) {
@@ -275,19 +273,19 @@ public class DensoScannerPlugin: CAPPlugin, CAPBridgedPlugin, ScannerAcceptStatu
         let scannerStatus = state.getStatus()
         
         if scannerStatus == .SCANNER_STATUS_CLAIMED {
-            notifyListeners(DensoScannerStatusEvents.SCANNER_STATUS_CLAIMED.rawValue, data: [:])
+            notifyListeners(DensoScannerEvents.OnScannerStatusChanged.rawValue, data: ["status":DensoScannerStatusEvents.SCANNER_STATUS_CLAIMED.rawValue])
         } else if scannerStatus == .SCANNER_STATUS_CLOSE_WAIT {
             CommManager.sharedInstance().addAcceptStatusListener(listener: self)
             CommManager.sharedInstance().startAccept()
             scannerConnected = false
-            notifyListeners(DensoScannerStatusEvents.SCANNER_STATUS_CLOSE_WAIT.rawValue, data: [:])
+            notifyListeners(DensoScannerEvents.OnScannerStatusChanged.rawValue, data: ["status":DensoScannerStatusEvents.SCANNER_STATUS_CLOSE_WAIT.rawValue])
         } else if scannerStatus == .SCANNER_STATUS_CLOSED {
             CommManager.sharedInstance().endAccept()
             CommManager.sharedInstance().removeAcceptStatusListener(listener: self)
             scannerConnected = false
-            notifyListeners(DensoScannerStatusEvents.SCANNER_STATUS_CLOSED.rawValue, data: [:])
+            notifyListeners(DensoScannerEvents.OnScannerStatusChanged.rawValue, data: ["status":DensoScannerStatusEvents.SCANNER_STATUS_CLOSED.rawValue])
         } else {
-            notifyListeners(DensoScannerStatusEvents.SCANNER_STATUS_UNKNOWN.rawValue, data: [:])
+            notifyListeners(DensoScannerEvents.OnScannerStatusChanged.rawValue, data: ["status":DensoScannerStatusEvents.SCANNER_STATUS_UNKNOWN.rawValue])
         }
     }
 }

@@ -5,7 +5,6 @@ import android.util.Log;
 
 import com.densowave.scannersdk.Common.CommStatusChangedEvent;
 import com.densowave.scannersdk.Const.CommConst;
-import com.densowave.scannersdk.Dto.BarcodeScannerSettings;
 import com.densowave.scannersdk.Dto.CommScannerBtSettings;
 import com.densowave.scannersdk.Dto.RFIDScannerSettings;
 import com.densowave.scannersdk.Listener.RFIDDataDelegate;
@@ -66,15 +65,7 @@ public class DensoScannerPlugin extends Plugin implements ScannerAcceptStatusLis
         if (listCommScanner != null) {
             for (CommScanner scanner: listCommScanner) {
                 if (scanner.getBTLocalName().contains("SP1")) {
-                    try {
-                        Log.d("denso", "Try connect to " + scanner.getBTLocalName());
-                        scanner.claim();
-                        notifyListeners(DensoScannerStatusEvents.SCANNER_STATUS_CLAIMED.getStatus(), new JSObject());
-                        scannerConnected = true;
-                        commScanner = scanner;
-                    } catch (CommException e) {
-                        Log.d("denso", "Exception " + e.getMessage());
-                    }
+                    setupCommScanner(scanner);
                     break;
                 }
             }
@@ -167,7 +158,6 @@ public class DensoScannerPlugin extends Plugin implements ScannerAcceptStatusLis
             return;
         }
 
-
         try {
             RFIDScannerSettings settings = commScanner.getRFIDScanner().getSettings();
             call.resolve(implementation.createSettingsResponse(settings));
@@ -219,41 +209,26 @@ public class DensoScannerPlugin extends Plugin implements ScannerAcceptStatusLis
         return commScanner;
     }
 
-
     @Override
     public void OnScannerAppeared(CommScanner mCommScanner) {
-        Log.d("denso", "OnScannerAppeared");
-        try {
-            mCommScanner.claim();
-            notifyListeners(DensoScannerStatusEvents.SCANNER_STATUS_CLAIMED.getStatus(), new JSObject());
-            // Abort the connection request
-            CommManager.endAccept();
-            CommManager.removeAcceptStatusListener(this);
-        } catch (CommException e) {
-            e.printStackTrace();
-        }
+        setupCommScanner(mCommScanner);
 
-        try {
-            setConnectedCommScanner(mCommScanner);
-            commScanner = getCommScanner();
-        } catch (Exception e) {
-            Log.d("denso", "Exception " + e.getMessage());
-        }
+        CommManager.endAccept();
+        CommManager.removeAcceptStatusListener(this);
     }
 
     @Override
     public void onScannerStatusChanged(CommScanner scanner, CommStatusChangedEvent state) {
-        Log.d("denso", "onScannerStatusChanged");
         CommConst.ScannerStatus scannerStatus = state.getStatus();
 
         if (scannerStatus.equals(CommConst.ScannerStatus.CLAIMED)) {
-            notifyListeners(DensoScannerStatusEvents.SCANNER_STATUS_CLAIMED.getStatus(), new JSObject());
+            notifyListeners(DensoScannerEvents.OnScannerStatusChanged.getWebEventName(), new JSObject().put("status", DensoScannerStatusEvents.SCANNER_STATUS_CLAIMED.getStatus()));
         } else if (scannerStatus.equals(CommConst.ScannerStatus.CLOSE_WAIT)) {
-            notifyListeners(DensoScannerStatusEvents.SCANNER_STATUS_CLOSE_WAIT.getStatus(), new JSObject());
+            notifyListeners(DensoScannerEvents.OnScannerStatusChanged.getWebEventName(), new JSObject().put("status", DensoScannerStatusEvents.SCANNER_STATUS_CLOSE_WAIT.getStatus()));
         } else if (scannerStatus.equals(CommConst.ScannerStatus.CLOSED)) {
-            notifyListeners(DensoScannerStatusEvents.SCANNER_STATUS_CLOSED.getStatus(), new JSObject());
+            notifyListeners(DensoScannerEvents.OnScannerStatusChanged.getWebEventName(), new JSObject().put("status", DensoScannerStatusEvents.SCANNER_STATUS_CLOSED.getStatus()));
         } else {
-            notifyListeners(DensoScannerStatusEvents.SCANNER_STATUS_UNKNOWN.getStatus(), new JSObject());
+            notifyListeners(DensoScannerEvents.OnScannerStatusChanged.getWebEventName(), new JSObject().put("status", DensoScannerStatusEvents.SCANNER_STATUS_UNKNOWN.getStatus()));
         }
     }
 
@@ -275,8 +250,23 @@ public class DensoScannerPlugin extends Plugin implements ScannerAcceptStatusLis
         return scannerConnected;
     }
 
+    public void setupCommScanner(CommScanner connectedCommScanner) {
+        try {
+            connectedCommScanner.claim();
 
-    public void setConnectedCommScanner(CommScanner connectedCommScanner) {
+            CommScannerBtSettings btSet = connectedCommScanner.getBtSettings();
+            if(btSet.mode != CommScannerBtSettings.Mode.SLAVE){
+                btSet.mode = CommScannerBtSettings.Mode.SLAVE;
+                connectedCommScanner.setBtSettings(btSet);
+            }
+
+            notifyListeners(DensoScannerStatusEvents.SCANNER_STATUS_CLAIMED.getStatus(), new JSObject());
+
+        } catch (CommException e) {
+            e.printStackTrace();
+        }
+
+
         if (connectedCommScanner != null) {
             scannerConnected = true;
             connectedCommScanner.addStatusListener(this);

@@ -28,11 +28,7 @@ export class HomePage implements OnInit, OnDestroy {
   async ngOnInit() {
     this.listenerHandles.push(
       await DensoScanner.addListener(DensoScannerEvent.OnScannerStatusChanged, (event) => {
-        if (event.status === DensoOnScannerStatusChangedEvent.SCANNER_STATUS_CLAIMED) {
-          this.isReady.set(true);
-        } else {
-          this.isReady.set(false);
-        }
+        this.isReady.set(event.status === DensoOnScannerStatusChangedEvent.SCANNER_STATUS_CLAIMED);
       }),
     );
     this.listenerHandles.push(

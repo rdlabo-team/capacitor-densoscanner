@@ -3,11 +3,25 @@ import Capacitor
 import DENSOScannerSDK
 
 @objc public class DensoScanner: NSObject {
+    weak var plugin: DensoScannerPlugin?
+    
     func setupScanner(scanner: CommScanner) -> Bool {
         var error: NSError? = nil
         scanner.claim(&error)
         if (error != nil) {
             return false
+        }
+        
+        plugin!.notifyListeners(DensoScannerEvents.OnScannerStatusChanged.rawValue, data: ["status":DensoScannerStatusEvents.SCANNER_STATUS_CLAIMED.rawValue])
+        plugin!.scannerConnected = true
+        plugin!.commScanner = scanner
+        plugin!.rfidScanner = scanner.getRFIDScanner()
+        scanner.addStatusListener(plugin!)
+        
+        let btSettings = scanner.getBtSettings(&error)
+        if(btSettings?.mode != .MODE_SLAVE) {
+            btSettings?.mode = .MODE_SLAVE
+            scanner.setBtSettings(btSettings, error: &error)
         }
         return true
     }
