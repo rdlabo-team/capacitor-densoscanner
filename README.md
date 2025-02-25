@@ -54,7 +54,7 @@ And update the following files: AndroidManifest.xml
 
 <docgen-index>
 
-* [`attach()`](#attach)
+* [`attach(...)`](#attach)
 * [`detach()`](#detach)
 * [`openInventory()`](#openinventory)
 * [`pullData()`](#pulldata)
@@ -71,11 +71,15 @@ And update the following files: AndroidManifest.xml
 <docgen-api>
 <!--Update the source file JSDoc comments and rerun docgen to update the docs below-->
 
-### attach()
+### attach(...)
 
 ```typescript
-attach() => Promise<void>
+attach(options: DensoScannerAttachOptions) => Promise<void>
 ```
+
+| Param         | Type                                                                            |
+| ------------- | ------------------------------------------------------------------------------- |
+| **`options`** | <code><a href="#densoscannerattachoptions">DensoScannerAttachOptions</a></code> |
 
 --------------------
 
@@ -177,14 +181,23 @@ addListener(eventName: DensoScannerEvent.ReadData, listenerFunc: (event: ReadDat
 ### Interfaces
 
 
+#### DensoScannerAttachOptions
+
+| Prop              | Type                                                                                    | Description                                                                  |
+| ----------------- | --------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
+| **`searchType`**  | <code><a href="#densoscannerattachsearchtype">DensoScannerAttachSearchType</a></code>   | 初回接続はINITIAL、再接続はRECONNECTを指定します。 ただし、SLAVE（多対多）として運用する時は常にINITIALを指定してください。 |
+| **`connectMode`** | <code><a href="#densoscannerattachconnectmode">DensoScannerAttachConnectMode</a></code> | 1対1で運用する時はMASTER、多対多で運用する時はSLAVEを指定します。 なお、SLAVEでは、毎回Bluetoothの接続設定が必要です。    |
+
+
 #### DensoScannerSettings
 
-| Prop                 | Type                                                                          |
-| -------------------- | ----------------------------------------------------------------------------- |
-| **`triggerMode`**    | <code><a href="#densoscannertriggermode">DensoScannerTriggerMode</a></code>   |
-| **`powerLevelRead`** | <code>number</code>                                                           |
-| **`session`**        | <code>number</code>                                                           |
-| **`polarization`**   | <code><a href="#densoscannerpolarization">DensoScannerPolarization</a></code> |
+| Prop                 | Type                                                                                    |
+| -------------------- | --------------------------------------------------------------------------------------- |
+| **`triggerMode`**    | <code><a href="#densoscannertriggermode">DensoScannerTriggerMode</a></code>             |
+| **`powerLevelRead`** | <code>number</code>                                                                     |
+| **`session`**        | <code>number</code>                                                                     |
+| **`polarization`**   | <code><a href="#densoscannerpolarization">DensoScannerPolarization</a></code>           |
+| **`connectMode`**    | <code><a href="#densoscannerattachconnectmode">DensoScannerAttachConnectMode</a></code> |
 
 
 #### PluginListenerHandle
@@ -215,6 +228,23 @@ addListener(eventName: DensoScannerEvent.ReadData, listenerFunc: (event: ReadDat
 
 
 ### Enums
+
+
+#### DensoScannerAttachSearchType
+
+| Members         | Value                    |
+| --------------- | ------------------------ |
+| **`INITIAL`**   | <code>'INITIAL'</code>   |
+| **`RECONNECT`** | <code>'RECONNECT'</code> |
+
+
+#### DensoScannerAttachConnectMode
+
+| Members      | Value                 |
+| ------------ | --------------------- |
+| **`MASTER`** | <code>'MASTER'</code> |
+| **`SLAVE`**  | <code>'SLAVE'</code>  |
+| **`AUTO`**   | <code>'AUTO'</code>   |
 
 
 #### DensoScannerTriggerMode

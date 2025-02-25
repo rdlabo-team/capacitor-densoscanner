@@ -1,7 +1,7 @@
-import { WebPlugin } from '@capacitor/core';
+import {WebPlugin} from '@capacitor/core';
 
-import type { DensoScannerPlugin, DensoScannerSettings } from './definitions';
-import { DensoScannerPolarization, DensoScannerTriggerMode } from './definitions';
+import type {DensoScannerPlugin, DensoScannerSettings} from './definitions';
+import {DensoScannerAttachConnectMode, DensoScannerPolarization, DensoScannerTriggerMode} from './definitions';
 
 export class DensoScannerWeb extends WebPlugin implements DensoScannerPlugin {
   async attach(): Promise<void> {
@@ -25,6 +25,7 @@ export class DensoScannerWeb extends WebPlugin implements DensoScannerPlugin {
       powerLevelRead: 30,
       session: 0,
       polarization: DensoScannerPolarization.POLARIZATION_BOTH,
+      connectMode: DensoScannerAttachConnectMode.AUTO,
     };
   }
   async setSettings(options: Partial<DensoScannerSettings>): Promise<DensoScannerSettings> {
@@ -34,6 +35,7 @@ export class DensoScannerWeb extends WebPlugin implements DensoScannerPlugin {
       powerLevelRead: 30,
       session: 0,
       polarization: DensoScannerPolarization.POLARIZATION_BOTH,
+      connectMode: DensoScannerAttachConnectMode.AUTO,
     };
   }
 }
