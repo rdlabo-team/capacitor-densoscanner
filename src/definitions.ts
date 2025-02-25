@@ -1,7 +1,7 @@
 import type { PluginListenerHandle } from '@capacitor/core';
 
 export interface DensoScannerPlugin {
-  attach(): Promise<void>;
+  attach(options: DensoScannerAttachOptions): Promise<void>;
   detach(): Promise<void>;
   openInventory(): Promise<void>;
   pullData(): Promise<void>;
@@ -61,11 +61,37 @@ export enum DensoScannerPolarization {
   POLARIZATION_BOTH = 'POLARIZATION_BOTH',
 }
 
+export interface DensoScannerAttachOptions {
+  /**
+   * 初回接続はINITIAL、再接続はRECONNECTを指定します。
+   * ただし、SLAVE（多対多）として運用する時は常にINITIALを指定してください。
+   */
+  searchType: DensoScannerAttachSearchType;
+
+  /**
+   * 1対1で運用する時はMASTER、多対多で運用する時はSLAVEを指定します。
+   * なお、SLAVEでは、毎回Bluetoothの接続設定が必要です。
+   */
+  connectMode: DensoScannerAttachConnectMode;
+}
+
+export enum DensoScannerAttachSearchType {
+  INITIAL = 'INITIAL',
+  RECONNECT = 'RECONNECT',
+}
+
+export enum DensoScannerAttachConnectMode {
+  MASTER = 'MASTER',
+  SLAVE = 'SLAVE',
+  AUTO = 'AUTO',
+}
+
 export interface DensoScannerSettings {
   triggerMode: DensoScannerTriggerMode; // default: 'RFID_TRIGGER_MODE_CONTINUOUS1'
   powerLevelRead: number; // default: 30 / 4 - 30
   session: number; // default: 0 / 0 - 3
   polarization: DensoScannerPolarization; // default: 'POLARIZATION_BOTH
+  connectMode: DensoScannerAttachConnectMode;
 
   // 初期値のままで多分大丈夫
   // sessionFlag: SESSION_FLAG_S0

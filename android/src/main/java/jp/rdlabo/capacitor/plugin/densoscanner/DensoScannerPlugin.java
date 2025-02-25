@@ -29,6 +29,7 @@ import com.getcapacitor.annotation.PermissionCallback;
 import org.json.JSONException;
 
 import java.util.List;
+import java.util.Objects;
 
 @CapacitorPlugin(
        name = "DensoScanner",
@@ -48,6 +49,7 @@ public class DensoScannerPlugin extends Plugin implements ScannerAcceptStatusLis
     public static CommScanner commScanner;
     public static boolean scannerConnected = false;
     public static boolean isOpened = false;
+    public static String connectMode = "MASTER";
 
     private DensoScanner implementation = new DensoScanner();
 
@@ -58,26 +60,30 @@ public class DensoScannerPlugin extends Plugin implements ScannerAcceptStatusLis
             return;
         }
 
-        if (isCommScanner()) {
+        if (isCommScanner() || scannerConnected) {
             call.resolve();
             return;
         }
 
-        List<CommScanner> listCommScanner = CommManager.getScanners();
-        if (listCommScanner != null) {
-            for (CommScanner scanner: listCommScanner) {
-                if (scanner.getBTLocalName().contains("SP1")) {
-                    setupCommScanner(scanner);
-                    break;
+        connectMode = call.getString("connectMode", "MASTER");
+
+        if (Objects.equals(call.getString("searchType", "INITIAL"), "INITIAL")) {
+            List<CommScanner> listCommScanner = CommManager.getScanners();
+            if (listCommScanner != null) {
+                for (CommScanner scanner : listCommScanner) {
+                    if (scanner.getBTLocalName().contains("SP1")) {
+                        setupCommScanner(scanner);
+                        break;
+                    }
                 }
             }
-        }
-
-        if (!scannerConnected) {
+        } else {
             CommManager.addAcceptStatusListener(this);
             CommManager.startAccept();
             Log.d("denso", "startAccept");
         }
+
+        call.resolve();
     }
 
     @PluginMethod
@@ -162,7 +168,8 @@ public class DensoScannerPlugin extends Plugin implements ScannerAcceptStatusLis
 
         try {
             RFIDScannerSettings settings = commScanner.getRFIDScanner().getSettings();
-            call.resolve(implementation.createSettingsResponse(settings));
+            CommScannerBtSettings btSet = commScanner.getBtSettings();
+            call.resolve(implementation.createSettingsResponse(settings, btSet));
         } catch (Exception e) {
             call.reject(e.getLocalizedMessage());
         }
@@ -199,8 +206,23 @@ public class DensoScannerPlugin extends Plugin implements ScannerAcceptStatusLis
                 settings.scan.polarization = DensoScannerPolarizationMapper.fromString(call.getString("polarization"));
             }
 
-            commScanner.getRFIDScanner().setSettings(settings);
-            call.resolve(implementation.createSettingsResponse(settings));
+            CommScannerBtSettings btSet = null;
+            if (call.getString("connectMode") != null) {
+                btSet = implementation.updateConnectMode(commScanner, call.getString("connectMode"));
+            } else {
+                try {
+                    btSet = commScanner.getBtSettings();
+                } catch (Exception e) {
+                    call.reject(e.getLocalizedMessage());
+                }
+            }
+
+            try {
+                commScanner.getRFIDScanner().setSettings(settings);
+                call.resolve(implementation.createSettingsResponse(settings, btSet));
+            } catch (Exception e) {
+                call.reject(e.getLocalizedMessage());
+            }
             
         } catch (RFIDException e) {
             call.reject(e.getLocalizedMessage());
@@ -260,12 +282,7 @@ public class DensoScannerPlugin extends Plugin implements ScannerAcceptStatusLis
     public void setupCommScanner(CommScanner connectedCommScanner) {
         try {
             connectedCommScanner.claim();
-
-            CommScannerBtSettings btSet = connectedCommScanner.getBtSettings();
-            if(btSet.mode != CommScannerBtSettings.Mode.SLAVE){
-                btSet.mode = CommScannerBtSettings.Mode.SLAVE;
-                connectedCommScanner.setBtSettings(btSet);
-            }
+            implementation.updateConnectMode(connectedCommScanner, connectMode);
         } catch (CommException e) {
             e.printStackTrace();
             return;

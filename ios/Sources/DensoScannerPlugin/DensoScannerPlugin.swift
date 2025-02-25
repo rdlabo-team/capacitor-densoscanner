@@ -27,6 +27,7 @@ public class DensoScannerPlugin: CAPPlugin, CAPBridgedPlugin, ScannerAcceptStatu
     public var isOpen: Bool = false
     public var commScanner: CommScanner? = nil
     public var rfidScanner: RFIDScanner? = nil
+    public var connectMode: String = "MASTER"
     
     override public func load(){
         super.load()
@@ -34,24 +35,30 @@ public class DensoScannerPlugin: CAPPlugin, CAPBridgedPlugin, ScannerAcceptStatu
     }
 
     @objc func attach(_ call: CAPPluginCall) {
-        guard let scanners = CommManager.getScanners() else {
-            CommManager.sharedInstance().addAcceptStatusListener(listener: self)
-            return
+        self.connectMode = call.getString("connectMode", "MASTER");
+        
+        if scannerConnected {
+            call.resolve([:])
         }
         
-        for scanner in scanners {
-            print(scanner.getBTLocalName())
-            if implementation.setupScanner(scanner: scanner) {
-                if let model = scanner.getBTLocalName(), model.contains(AppConstant.deviceSP1) {
-                    break
-                } else {
-                    // 目的のデバイスでないため解除
-                    self.detach(call)
+        if call.getString("searchType", "INITIAL") == "INITIAL" {
+            guard let scanners = CommManager.getScanners() else {
+                CommManager.sharedInstance().addAcceptStatusListener(listener: self)
+                return
+            }
+            
+            for scanner in scanners {
+                print(scanner.getBTLocalName())
+                if implementation.setupScanner(scanner: scanner) {
+                    if let model = scanner.getBTLocalName(), model.contains(AppConstant.deviceSP1) {
+                        break
+                    } else {
+                        // 目的のデバイスでないため解除
+                        self.detach(call)
+                    }
                 }
             }
-        }
-        
-        if !scannerConnected {
+        } else {
             CommManager.sharedInstance().addAcceptStatusListener(listener: self)
         }
         
@@ -158,12 +165,13 @@ public class DensoScannerPlugin: CAPPlugin, CAPBridgedPlugin, ScannerAcceptStatu
         // Get scanner setting value
         // If the error is not output, the obtained value is treated as not nil
         let settings = scanner.getRFIDScanner().getSettings(&error)
+        let btSettings = scanner.getBtSettings(&error)
         
         if (error != nil) {
             call.reject(error!.localizedDescription)
             return
         }
-        call.resolve(implementation.receiveCommScannerSettings(settings: settings!))
+        call.resolve(implementation.receiveCommScannerSettings(settings: settings!, btSettings: btSettings!))
     }
     
     @objc func setSettings(_ call: CAPPluginCall) {
@@ -175,6 +183,7 @@ public class DensoScannerPlugin: CAPPlugin, CAPBridgedPlugin, ScannerAcceptStatu
         var error: NSError? = nil
         
         let settings = scanner.getRFIDScanner().getSettings(&error)
+        var btSettings = scanner.getBtSettings(&error)
         if (error != nil) {
             call.reject(error!.localizedDescription)
             return
@@ -236,7 +245,11 @@ public class DensoScannerPlugin: CAPPlugin, CAPBridgedPlugin, ScannerAcceptStatu
             return
         }
         
-        call.resolve(implementation.receiveCommScannerSettings(settings: settings!))
+        if (call.getString("connectMode") != nil) {
+            var btSettings = implementation.updateConnectMode(scanner: scanner, connectMode: call.getString("connectMode")!)
+        }
+        
+        call.resolve(implementation.receiveCommScannerSettings(settings: settings!, btSettings: btSettings!))
     }
     
     public func OnScannerAppeared(scanner: CommScanner!) {

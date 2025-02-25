@@ -27,3 +27,9 @@ public enum DensoScannerPolarization: String {
     case POLARIZATION_H = "POLARIZATION_H"
     case POLARIZATION_BOTH = "POLARIZATION_BOTH"
 }
+
+public enum DensoScannerConnectMode: String {
+    case MASTER = "MASTER"
+    case SLAVE = "SLAVE"
+    case AUTO = "AUTO"
+}

@@ -1,7 +1,7 @@
 package jp.rdlabo.capacitor.plugin.densoscanner
 
+import com.densowave.scannersdk.Dto.CommScannerBtSettings
 import com.densowave.scannersdk.Dto.RFIDScannerSettings
-import java.util.Map
 
 
 enum class DensoScannerEvents(val webEventName: String) {
@@ -57,5 +57,26 @@ object DensoScannerPolarizationMapper {
     @JvmStatic
     fun toString(polarization: RFIDScannerSettings.Scan.Polarization): String? {
         return REVERSE_POLARIZATION_MAP[polarization]
+    }
+}
+
+object ConnectModeMapper {
+    private val CONNECT_MODE_MAP = mapOf(
+        "MASTER" to CommScannerBtSettings.Mode.MASTER,
+        "SLAVE" to CommScannerBtSettings.Mode.SLAVE,
+        "AUTO" to CommScannerBtSettings.Mode.AUTO,
+    )
+
+    private val REVERSE_CONNECT_MODE_MAP = CONNECT_MODE_MAP.entries
+        .associate { it.value to it.key }
+
+    @JvmStatic
+    fun fromString(mode: String?): CommScannerBtSettings.Mode {
+        return CONNECT_MODE_MAP[mode] ?: CommScannerBtSettings.Mode.MASTER
+    }
+
+    @JvmStatic
+    fun toString(triggerMode: CommScannerBtSettings.Mode): String? {
+        return REVERSE_CONNECT_MODE_MAP[triggerMode]
     }
 }

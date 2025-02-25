@@ -17,13 +17,24 @@ import DENSOScannerSDK
         plugin!.commScanner = scanner
         plugin!.rfidScanner = scanner.getRFIDScanner()
         scanner.addStatusListener(plugin!)
+        updateConnectMode(scanner: scanner, connectMode: plugin!.connectMode)
+        
+        return true
+    }
+    
+    func updateConnectMode(scanner: CommScanner, connectMode: String) -> CommScannerBtSettings {
+        var error: NSError? = nil
         
         let btSettings = scanner.getBtSettings(&error)
-        if(btSettings?.mode != .MODE_SLAVE) {
+        if(plugin!.connectMode == DensoScannerConnectMode.SLAVE.rawValue && btSettings?.mode != .MODE_SLAVE) {
             btSettings?.mode = .MODE_SLAVE
             scanner.setBtSettings(btSettings, error: &error)
+        } else if (plugin!.connectMode == DensoScannerConnectMode.MASTER.rawValue && btSettings?.mode != .MODE_MASTER) {
+            btSettings?.mode = .MODE_MASTER
+            scanner.setBtSettings(btSettings, error: &error)
         }
-        return true
+        
+        return btSettings!
     }
     
     func convertDataToString(_ data: Data) -> String? {
@@ -54,7 +65,7 @@ import DENSOScannerSDK
         return bytes
     }
     
-    func receiveCommScannerSettings(settings: RFIDScannerSettings) -> JSObject {
+    func receiveCommScannerSettings(settings: RFIDScannerSettings, btSettings: CommScannerBtSettings) -> JSObject {
         
         let triggerMode: String = switch settings.scan.triggerMode {
             case .RFID_TRIGGER_MODE_AUTO_OFF:
@@ -80,12 +91,19 @@ import DENSOScannerSDK
             3
         }
         
+        let connectMode : String = switch btSettings.mode {
+        case .MODE_MASTER : DensoScannerConnectMode.MASTER.rawValue
+        case .MODE_SLAVE : DensoScannerConnectMode.SLAVE.rawValue
+        case .MODE_AUTO : DensoScannerConnectMode.AUTO.rawValue
+        }
+        
         
         return [
             "triggerMode": triggerMode,
             "powerLevelRead": Int(settings.scan.powerLevelRead),
             "session": session,
-            "polarization": settings.scan.polarization.des()
+            "polarization": settings.scan.polarization.des(),
+            "connectMode": connectMode,
         ]
     }
 }
