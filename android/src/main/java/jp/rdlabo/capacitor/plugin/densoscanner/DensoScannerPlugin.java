@@ -2,12 +2,15 @@ package jp.rdlabo.capacitor.plugin.densoscanner;
 
 import android.Manifest;
 import android.util.Log;
-
+import com.densowave.scannersdk.Common.CommException;
+import com.densowave.scannersdk.Common.CommManager;
+import com.densowave.scannersdk.Common.CommScanner;
 import com.densowave.scannersdk.Common.CommStatusChangedEvent;
 import com.densowave.scannersdk.Const.CommConst;
 import com.densowave.scannersdk.Dto.CommScannerBtSettings;
 import com.densowave.scannersdk.Dto.RFIDScannerSettings;
 import com.densowave.scannersdk.Listener.RFIDDataDelegate;
+import com.densowave.scannersdk.Listener.ScannerAcceptStatusListener;
 import com.densowave.scannersdk.Listener.ScannerStatusListener;
 import com.densowave.scannersdk.RFID.RFIDDataReceivedEvent;
 import com.densowave.scannersdk.RFID.RFIDException;
@@ -18,34 +21,28 @@ import com.getcapacitor.Plugin;
 import com.getcapacitor.PluginCall;
 import com.getcapacitor.PluginMethod;
 import com.getcapacitor.annotation.CapacitorPlugin;
-
-import com.densowave.scannersdk.Common.CommException;
-import com.densowave.scannersdk.Common.CommManager;
-import com.densowave.scannersdk.Common.CommScanner;
-import com.densowave.scannersdk.Listener.ScannerAcceptStatusListener;
 import com.getcapacitor.annotation.Permission;
 import com.getcapacitor.annotation.PermissionCallback;
-
-import org.json.JSONException;
-
 import java.util.List;
 import java.util.Objects;
+import org.json.JSONException;
 
 @CapacitorPlugin(
-       name = "DensoScanner",
-       permissions = {
-               @Permission(
-                       alias = "bluetooth",
-                       strings = {
-                               Manifest.permission.BLUETOOTH,
-                               Manifest.permission.BLUETOOTH_ADMIN,
-                               Manifest.permission.BLUETOOTH_CONNECT,
-                               Manifest.permission.BLUETOOTH_SCAN,
-                       }
-               ),
-       }
+    name = "DensoScanner",
+    permissions = {
+        @Permission(
+            alias = "bluetooth",
+            strings = {
+                Manifest.permission.BLUETOOTH,
+                Manifest.permission.BLUETOOTH_ADMIN,
+                Manifest.permission.BLUETOOTH_CONNECT,
+                Manifest.permission.BLUETOOTH_SCAN
+            }
+        )
+    }
 )
 public class DensoScannerPlugin extends Plugin implements ScannerAcceptStatusListener, ScannerStatusListener, RFIDDataDelegate {
+
     public static CommScanner commScanner;
     public static boolean scannerConnected = false;
     public static boolean isOpened = false;
@@ -223,7 +220,6 @@ public class DensoScannerPlugin extends Plugin implements ScannerAcceptStatusLis
             } catch (Exception e) {
                 call.reject(e.getLocalizedMessage());
             }
-            
         } catch (RFIDException e) {
             call.reject(e.getLocalizedMessage());
         }
@@ -246,13 +242,25 @@ public class DensoScannerPlugin extends Plugin implements ScannerAcceptStatusLis
         CommConst.ScannerStatus scannerStatus = state.getStatus();
 
         if (scannerStatus.equals(CommConst.ScannerStatus.CLAIMED)) {
-            notifyListeners(DensoScannerEvents.OnScannerStatusChanged.getWebEventName(), new JSObject().put("status", DensoScannerStatusEvents.SCANNER_STATUS_CLAIMED.getStatus()));
+            notifyListeners(
+                DensoScannerEvents.OnScannerStatusChanged.getWebEventName(),
+                new JSObject().put("status", DensoScannerStatusEvents.SCANNER_STATUS_CLAIMED.getStatus())
+            );
         } else if (scannerStatus.equals(CommConst.ScannerStatus.CLOSE_WAIT)) {
-            notifyListeners(DensoScannerEvents.OnScannerStatusChanged.getWebEventName(), new JSObject().put("status", DensoScannerStatusEvents.SCANNER_STATUS_CLOSE_WAIT.getStatus()));
+            notifyListeners(
+                DensoScannerEvents.OnScannerStatusChanged.getWebEventName(),
+                new JSObject().put("status", DensoScannerStatusEvents.SCANNER_STATUS_CLOSE_WAIT.getStatus())
+            );
         } else if (scannerStatus.equals(CommConst.ScannerStatus.CLOSED)) {
-            notifyListeners(DensoScannerEvents.OnScannerStatusChanged.getWebEventName(), new JSObject().put("status", DensoScannerStatusEvents.SCANNER_STATUS_CLOSED.getStatus()));
+            notifyListeners(
+                DensoScannerEvents.OnScannerStatusChanged.getWebEventName(),
+                new JSObject().put("status", DensoScannerStatusEvents.SCANNER_STATUS_CLOSED.getStatus())
+            );
         } else {
-            notifyListeners(DensoScannerEvents.OnScannerStatusChanged.getWebEventName(), new JSObject().put("status", DensoScannerStatusEvents.SCANNER_STATUS_UNKNOWN.getStatus()));
+            notifyListeners(
+                DensoScannerEvents.OnScannerStatusChanged.getWebEventName(),
+                new JSObject().put("status", DensoScannerStatusEvents.SCANNER_STATUS_UNKNOWN.getStatus())
+            );
         }
     }
 
@@ -264,7 +272,7 @@ public class DensoScannerPlugin extends Plugin implements ScannerAcceptStatusLis
 
         for (int i = 0; i < rfidDataReceivedEvent.getRFIDData().size(); i++) {
             byte[] uii = rfidDataReceivedEvent.getRFIDData().get(i).getUII();
-            for (byte loop: uii) {
+            for (byte loop : uii) {
                 stringValues.put(String.format("%02X ", loop).trim());
                 hexString.append(String.format("%02X ", loop));
             }
@@ -272,7 +280,10 @@ public class DensoScannerPlugin extends Plugin implements ScannerAcceptStatusLis
             hexValues.put(result);
         }
 
-        notifyListeners(DensoScannerEvents.ReadData.getWebEventName(), new JSObject().put("codes", stringValues).put("hexValues", hexValues));
+        notifyListeners(
+            DensoScannerEvents.ReadData.getWebEventName(),
+            new JSObject().put("codes", stringValues).put("hexValues", hexValues)
+        );
     }
 
     public boolean isCommScanner() {
@@ -288,14 +299,17 @@ public class DensoScannerPlugin extends Plugin implements ScannerAcceptStatusLis
             return;
         }
 
-        notifyListeners(DensoScannerEvents.OnScannerStatusChanged.getWebEventName(), new JSObject().put("status", DensoScannerStatusEvents.SCANNER_STATUS_CLAIMED.getStatus()));
+        notifyListeners(
+            DensoScannerEvents.OnScannerStatusChanged.getWebEventName(),
+            new JSObject().put("status", DensoScannerStatusEvents.SCANNER_STATUS_CLAIMED.getStatus())
+        );
 
         scannerConnected = true;
         connectedCommScanner.addStatusListener(this);
         commScanner = connectedCommScanner;
     }
 
-    private Boolean isBluetoothPermissionGranted()  {
+    private Boolean isBluetoothPermissionGranted() {
         return getPermissionState("bluetooth") == PermissionState.GRANTED;
     }
 
@@ -308,4 +322,3 @@ public class DensoScannerPlugin extends Plugin implements ScannerAcceptStatusLis
         }
     }
 }
-

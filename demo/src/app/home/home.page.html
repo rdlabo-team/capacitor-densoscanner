@@ -7,10 +7,18 @@
 <ion-content>
   <ion-list>
     <ion-item (click)="attach()" button="true" [disabled]="isReady()"><ion-label>Attach</ion-label></ion-item>
-    <ion-item (click)="getSettings()" button="true" [disabled]="!isReady()"><ion-label>Get Settings</ion-label></ion-item>
-    <ion-item (click)="setSettings()" button="true" [disabled]="!isReady()"><ion-label>Set Settings</ion-label></ion-item>
-    <ion-item (click)="openInventory()" button="true" [disabled]="!isReady()"><ion-label>open Inventory(Modal)</ion-label></ion-item>
-    <ion-item (click)="pullData()" button="true" [disabled]="!isReady()"><ion-label>pull Data(Modal)</ion-label></ion-item>
+    <ion-item (click)="getSettings()" button="true" [disabled]="!isReady()"
+      ><ion-label>Get Settings</ion-label></ion-item
+    >
+    <ion-item (click)="setSettings()" button="true" [disabled]="!isReady()"
+      ><ion-label>Set Settings</ion-label></ion-item
+    >
+    <ion-item (click)="openInventory()" button="true" [disabled]="!isReady()"
+      ><ion-label>open Inventory(Modal)</ion-label></ion-item
+    >
+    <ion-item (click)="pullData()" button="true" [disabled]="!isReady()"
+      ><ion-label>pull Data(Modal)</ion-label></ion-item
+    >
     <ion-item (click)="detach()" button="true" [disabled]="!isReady()"><ion-label>Detach</ion-label></ion-item>
   </ion-list>
 </ion-content>

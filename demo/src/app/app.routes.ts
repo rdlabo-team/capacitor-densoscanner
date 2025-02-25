@@ -12,6 +12,6 @@ export const routes: Routes = [
   },
   {
     path: 'reader',
-    loadComponent: () => import('./reader/reader.page').then( m => m.ReaderPage)
+    loadComponent: () => import('./reader/reader.page').then((m) => m.ReaderPage),
   },
 ];

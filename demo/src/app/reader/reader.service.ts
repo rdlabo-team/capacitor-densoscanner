@@ -1,11 +1,10 @@
-import {Injectable, signal} from '@angular/core';
+import { Injectable, signal } from '@angular/core';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class ReaderService {
-
-  constructor() { }
+  constructor() {}
 
   codes = signal<string[]>([]);
   hexValues = signal<string[]>([]);

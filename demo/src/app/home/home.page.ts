@@ -1,4 +1,4 @@
-import {Component, inject, OnDestroy, OnInit, signal} from '@angular/core';
+import { Component, inject, OnDestroy, OnInit, signal } from '@angular/core';
 import { IonHeader, IonToolbar, IonTitle, IonContent, IonList, IonItem, IonLabel } from '@ionic/angular/standalone';
 import { DensoScanner } from '@rdlabo/capacitor-densoscanner';
 import {
@@ -8,9 +8,9 @@ import {
   DensoScannerTriggerMode,
 } from '../../../../src';
 import { PluginListenerHandle } from '@capacitor/core';
-import {ReaderService} from '../reader/reader.service';
-import {ModalController} from '@ionic/angular/standalone';
-import {ReaderPage} from '../reader/reader.page';
+import { ReaderService } from '../reader/reader.service';
+import { ModalController } from '@ionic/angular/standalone';
+import { ReaderPage } from '../reader/reader.page';
 
 @Component({
   selector: 'app-home',
@@ -21,7 +21,7 @@ import {ReaderPage} from '../reader/reader.page';
 export class HomePage implements OnInit, OnDestroy {
   listenerHandles: PluginListenerHandle[] = [];
   readonly isReady = signal<boolean>(false);
-  readonly readerService = inject(ReaderService)
+  readonly readerService = inject(ReaderService);
   readonly modalCtrl = inject(ModalController);
   constructor() {}
 
