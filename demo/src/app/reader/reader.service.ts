@@ -8,4 +8,5 @@ export class ReaderService {
   constructor() { }
 
   codes = signal<string[]>([]);
+  hexValues = signal<string[]>([]);
 }

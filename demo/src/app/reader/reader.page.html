@@ -9,7 +9,7 @@
 
 <ion-content>
   <ion-list>
-    @for (item of readerService.codes(); track item) {
+    @for (item of readerService.hexValues(); track item) {
       <ion-item><ion-label>{{item}}</ion-label></ion-item>
     }
   </ion-list>

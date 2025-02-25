@@ -26,6 +26,8 @@ import com.densowave.scannersdk.Listener.ScannerAcceptStatusListener;
 import com.getcapacitor.annotation.Permission;
 import com.getcapacitor.annotation.PermissionCallback;
 
+import org.json.JSONException;
+
 import java.util.List;
 
 @CapacitorPlugin(
@@ -234,16 +236,21 @@ public class DensoScannerPlugin extends Plugin implements ScannerAcceptStatusLis
 
     @Override
     public void onRFIDDataReceived(CommScanner scanner, final RFIDDataReceivedEvent rfidDataReceivedEvent) {
-        JSArray data = new JSArray();
+        JSArray stringValues = new JSArray();
+        JSArray hexValues = new JSArray();
+        StringBuilder hexString = new StringBuilder();
 
         for (int i = 0; i < rfidDataReceivedEvent.getRFIDData().size(); i++) {
             byte[] uii = rfidDataReceivedEvent.getRFIDData().get(i).getUII();
             for (byte loop: uii) {
-                data.put(String.format("%02X ", loop).trim());
+                stringValues.put(String.format("%02X ", loop).trim());
+                hexString.append(String.format("%02X ", loop));
             }
+            String result = hexString.toString().trim();
+            hexValues.put(result);
         }
 
-        notifyListeners(DensoScannerEvents.ReadData.getWebEventName(), new JSObject().put("codes", data));
+        notifyListeners(DensoScannerEvents.ReadData.getWebEventName(), new JSObject().put("codes", stringValues).put("hexValues", hexValues));
     }
 
     public boolean isCommScanner() {
@@ -259,23 +266,15 @@ public class DensoScannerPlugin extends Plugin implements ScannerAcceptStatusLis
                 btSet.mode = CommScannerBtSettings.Mode.SLAVE;
                 connectedCommScanner.setBtSettings(btSet);
             }
-
-            notifyListeners(DensoScannerStatusEvents.SCANNER_STATUS_CLAIMED.getStatus(), new JSObject());
-
         } catch (CommException e) {
             e.printStackTrace();
+            return;
         }
 
+        notifyListeners(DensoScannerEvents.OnScannerStatusChanged.getWebEventName(), new JSObject().put("status", DensoScannerStatusEvents.SCANNER_STATUS_CLAIMED.getStatus()));
 
-        if (connectedCommScanner != null) {
-            scannerConnected = true;
-            connectedCommScanner.addStatusListener(this);
-        } else {
-            scannerConnected = false;
-            if (commScanner != null) {
-                commScanner.removeStatusListener(this);
-            }
-        }
+        scannerConnected = true;
+        connectedCommScanner.addStatusListener(this);
         commScanner = connectedCommScanner;
     }
 

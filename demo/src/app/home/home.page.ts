@@ -34,6 +34,7 @@ export class HomePage implements OnInit, OnDestroy {
     this.listenerHandles.push(
       await DensoScanner.addListener(DensoScannerEvent.ReadData, (event) => {
         this.readerService.codes.set([...new Set(event.codes.concat(this.readerService.codes()))]);
+        this.readerService.hexValues.set([...new Set(event.hexValues.concat(this.readerService.hexValues()))]);
       }),
     );
   }

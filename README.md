@@ -208,9 +208,10 @@ addListener(eventName: DensoScannerEvent.ReadData, listenerFunc: (event: ReadDat
 
 #### ReadDataEvent
 
-| Prop        | Type                  |
-| ----------- | --------------------- |
-| **`codes`** | <code>string[]</code> |
+| Prop            | Type                  |
+| --------------- | --------------------- |
+| **`codes`**     | <code>string[]</code> |
+| **`hexValues`** | <code>string[]</code> |
 
 
 ### Enums

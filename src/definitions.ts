@@ -22,6 +22,7 @@ export interface DensoScannerPlugin {
 
 export interface ReadDataEvent {
   codes: string[];
+  hexValues: string[];
 }
 
 /**

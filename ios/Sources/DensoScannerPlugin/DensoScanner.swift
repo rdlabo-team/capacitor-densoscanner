@@ -30,6 +30,10 @@ import DENSOScannerSDK
         return data.map { String(format: "%02X", $0) }.joined()
     }
     
+    func convertDataTohexString(_ data: Data) -> String? {
+        return data.map { String(format: "%02X", $0) }.joined(separator: " ")
+    }
+    
     func stringToBytes(_ string: String) -> [UInt8]? {
         let length = string.count
         if length & 1 != 0 {

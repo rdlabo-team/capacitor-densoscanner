@@ -259,14 +259,19 @@ public class DensoScannerPlugin: CAPPlugin, CAPBridgedPlugin, ScannerAcceptStatu
             
         // すべてのデータを変換して配列に格納
         var uiiStrings: [String] = []
+        var hexStrings: [String] = []
         for data in rfidDataArray {
             if let uiiString = implementation.convertDataToString(data.getUII()) {
                 uiiStrings.append(uiiString)
             }
+            
+            if let hexString = implementation.convertDataTohexString(data.getUII()) {
+                hexStrings.append(hexString)
+            }
         }
             
         // 空の結果になっても通知する（必要に応じて条件変更）
-        notifyListeners(DensoScannerEvents.ReadData.rawValue, data: ["codes": uiiStrings])
+        notifyListeners(DensoScannerEvents.ReadData.rawValue, data: ["codes": uiiStrings, "hexValues": hexStrings])
     }
     
     public func OnScannerStatusChanged(scanner: CommScanner!, state: CommStatusChangedEvent!) {
