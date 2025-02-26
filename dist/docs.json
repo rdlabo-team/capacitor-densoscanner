@@ -1,0 +1,439 @@
+{
+  "api": {
+    "name": "DensoScannerPlugin",
+    "slug": "densoscannerplugin",
+    "docs": "",
+    "tags": [],
+    "methods": [
+      {
+        "name": "attach",
+        "signature": "(options: DensoScannerAttachOptions) => Promise<void>",
+        "parameters": [
+          {
+            "name": "options",
+            "docs": "",
+            "type": "DensoScannerAttachOptions"
+          }
+        ],
+        "returns": "Promise<void>",
+        "tags": [],
+        "docs": "",
+        "complexTypes": [
+          "DensoScannerAttachOptions"
+        ],
+        "slug": "attach"
+      },
+      {
+        "name": "detach",
+        "signature": "() => Promise<void>",
+        "parameters": [],
+        "returns": "Promise<void>",
+        "tags": [],
+        "docs": "",
+        "complexTypes": [],
+        "slug": "detach"
+      },
+      {
+        "name": "openInventory",
+        "signature": "() => Promise<void>",
+        "parameters": [],
+        "returns": "Promise<void>",
+        "tags": [],
+        "docs": "",
+        "complexTypes": [],
+        "slug": "openinventory"
+      },
+      {
+        "name": "pullData",
+        "signature": "() => Promise<void>",
+        "parameters": [],
+        "returns": "Promise<void>",
+        "tags": [],
+        "docs": "",
+        "complexTypes": [],
+        "slug": "pulldata"
+      },
+      {
+        "name": "close",
+        "signature": "() => Promise<void>",
+        "parameters": [],
+        "returns": "Promise<void>",
+        "tags": [],
+        "docs": "",
+        "complexTypes": [],
+        "slug": "close"
+      },
+      {
+        "name": "getSettings",
+        "signature": "() => Promise<DensoScannerSettings>",
+        "parameters": [],
+        "returns": "Promise<DensoScannerSettings>",
+        "tags": [],
+        "docs": "",
+        "complexTypes": [
+          "DensoScannerSettings"
+        ],
+        "slug": "getsettings"
+      },
+      {
+        "name": "setSettings",
+        "signature": "(options: DensoScannerSettings) => Promise<DensoScannerSettings>",
+        "parameters": [
+          {
+            "name": "options",
+            "docs": "",
+            "type": "DensoScannerSettings"
+          }
+        ],
+        "returns": "Promise<DensoScannerSettings>",
+        "tags": [],
+        "docs": "",
+        "complexTypes": [
+          "DensoScannerSettings"
+        ],
+        "slug": "setsettings"
+      },
+      {
+        "name": "addListener",
+        "signature": "(eventName: DensoScannerEvent.OnScannerStatusChanged, listenerFunc: (event: OnScannerStatusChangedEvent) => void) => Promise<PluginListenerHandle>",
+        "parameters": [
+          {
+            "name": "eventName",
+            "docs": "",
+            "type": "DensoScannerEvent.OnScannerStatusChanged"
+          },
+          {
+            "name": "listenerFunc",
+            "docs": "",
+            "type": "(event: OnScannerStatusChangedEvent) => void"
+          }
+        ],
+        "returns": "Promise<PluginListenerHandle>",
+        "tags": [],
+        "docs": "",
+        "complexTypes": [
+          "PluginListenerHandle",
+          "DensoScannerEvent",
+          "OnScannerStatusChangedEvent"
+        ],
+        "slug": "addlistenerdensoscannereventonscannerstatuschanged-"
+      },
+      {
+        "name": "addListener",
+        "signature": "(eventName: DensoScannerEvent.ReadData, listenerFunc: (event: ReadDataEvent) => void) => Promise<PluginListenerHandle>",
+        "parameters": [
+          {
+            "name": "eventName",
+            "docs": "",
+            "type": "DensoScannerEvent.ReadData"
+          },
+          {
+            "name": "listenerFunc",
+            "docs": "",
+            "type": "(event: ReadDataEvent) => void"
+          }
+        ],
+        "returns": "Promise<PluginListenerHandle>",
+        "tags": [],
+        "docs": "",
+        "complexTypes": [
+          "PluginListenerHandle",
+          "DensoScannerEvent",
+          "ReadDataEvent"
+        ],
+        "slug": "addlistenerdensoscannereventreaddata-"
+      }
+    ],
+    "properties": []
+  },
+  "interfaces": [
+    {
+      "name": "DensoScannerAttachOptions",
+      "slug": "densoscannerattachoptions",
+      "docs": "",
+      "tags": [],
+      "methods": [],
+      "properties": [
+        {
+          "name": "searchType",
+          "tags": [],
+          "docs": "初回接続はINITIAL、再接続はRECONNECTを指定します。\nただし、SLAVE（多対多）として運用する時は常にINITIALを指定してください。",
+          "complexTypes": [
+            "DensoScannerAttachSearchType"
+          ],
+          "type": "DensoScannerAttachSearchType"
+        },
+        {
+          "name": "connectMode",
+          "tags": [],
+          "docs": "1対1で運用する時はMASTER、多対多で運用する時はSLAVEを指定します。\nなお、SLAVEでは、毎回Bluetoothの接続設定が必要です。",
+          "complexTypes": [
+            "DensoScannerAttachConnectMode"
+          ],
+          "type": "DensoScannerAttachConnectMode"
+        }
+      ]
+    },
+    {
+      "name": "DensoScannerSettings",
+      "slug": "densoscannersettings",
+      "docs": "",
+      "tags": [],
+      "methods": [],
+      "properties": [
+        {
+          "name": "triggerMode",
+          "tags": [],
+          "docs": "",
+          "complexTypes": [
+            "DensoScannerTriggerMode"
+          ],
+          "type": "DensoScannerTriggerMode"
+        },
+        {
+          "name": "powerLevelRead",
+          "tags": [],
+          "docs": "",
+          "complexTypes": [],
+          "type": "number"
+        },
+        {
+          "name": "session",
+          "tags": [],
+          "docs": "",
+          "complexTypes": [],
+          "type": "number"
+        },
+        {
+          "name": "polarization",
+          "tags": [],
+          "docs": "",
+          "complexTypes": [
+            "DensoScannerPolarization"
+          ],
+          "type": "DensoScannerPolarization"
+        },
+        {
+          "name": "connectMode",
+          "tags": [],
+          "docs": "",
+          "complexTypes": [
+            "DensoScannerAttachConnectMode"
+          ],
+          "type": "DensoScannerAttachConnectMode"
+        }
+      ]
+    },
+    {
+      "name": "PluginListenerHandle",
+      "slug": "pluginlistenerhandle",
+      "docs": "",
+      "tags": [],
+      "methods": [],
+      "properties": [
+        {
+          "name": "remove",
+          "tags": [],
+          "docs": "",
+          "complexTypes": [],
+          "type": "() => Promise<void>"
+        }
+      ]
+    },
+    {
+      "name": "OnScannerStatusChangedEvent",
+      "slug": "onscannerstatuschangedevent",
+      "docs": "- SCANNER_STATUS_CLAIMED: スキャナが獲得されました\n- SCANNER_STATUS_CLOSE_WAIT: クローズ待ちです。切断検知するとCommScanner#closeされるまでこの状態となります\n- SCANNER_STATUS_CLOSED:  スキャナが解放されました\n- SCANNER_STATUS_UNKNOWN: 不明な状態です",
+      "tags": [],
+      "methods": [],
+      "properties": [
+        {
+          "name": "status",
+          "tags": [],
+          "docs": "",
+          "complexTypes": [
+            "DensoOnScannerStatusChangedEvent"
+          ],
+          "type": "DensoOnScannerStatusChangedEvent"
+        }
+      ]
+    },
+    {
+      "name": "ReadDataEvent",
+      "slug": "readdataevent",
+      "docs": "",
+      "tags": [],
+      "methods": [],
+      "properties": [
+        {
+          "name": "codes",
+          "tags": [],
+          "docs": "",
+          "complexTypes": [],
+          "type": "string[]"
+        },
+        {
+          "name": "hexValues",
+          "tags": [],
+          "docs": "",
+          "complexTypes": [],
+          "type": "string[]"
+        }
+      ]
+    }
+  ],
+  "enums": [
+    {
+      "name": "DensoScannerAttachSearchType",
+      "slug": "densoscannerattachsearchtype",
+      "members": [
+        {
+          "name": "INITIAL",
+          "value": "'INITIAL'",
+          "tags": [],
+          "docs": ""
+        },
+        {
+          "name": "RECONNECT",
+          "value": "'RECONNECT'",
+          "tags": [],
+          "docs": ""
+        }
+      ]
+    },
+    {
+      "name": "DensoScannerAttachConnectMode",
+      "slug": "densoscannerattachconnectmode",
+      "members": [
+        {
+          "name": "MASTER",
+          "value": "'MASTER'",
+          "tags": [],
+          "docs": ""
+        },
+        {
+          "name": "SLAVE",
+          "value": "'SLAVE'",
+          "tags": [],
+          "docs": ""
+        },
+        {
+          "name": "AUTO",
+          "value": "'AUTO'",
+          "tags": [],
+          "docs": ""
+        }
+      ]
+    },
+    {
+      "name": "DensoScannerTriggerMode",
+      "slug": "densoscannertriggermode",
+      "members": [
+        {
+          "name": "RFID_TRIGGER_MODE_AUTO_OFF",
+          "value": "'RFID_TRIGGER_MODE_AUTO_OFF'",
+          "tags": [],
+          "docs": ""
+        },
+        {
+          "name": "RFID_TRIGGER_MODE_MOMENTARY",
+          "value": "'RFID_TRIGGER_MODE_MOMENTARY'",
+          "tags": [],
+          "docs": ""
+        },
+        {
+          "name": "RFID_TRIGGER_MODE_ALTERNATE",
+          "value": "'RFID_TRIGGER_MODE_ALTERNATE'",
+          "tags": [],
+          "docs": ""
+        },
+        {
+          "name": "RFID_TRIGGER_MODE_CONTINUOUS1",
+          "value": "'RFID_TRIGGER_MODE_CONTINUOUS1'",
+          "tags": [],
+          "docs": ""
+        },
+        {
+          "name": "RFID_TRIGGER_MODE_CONTINUOUS2",
+          "value": "'RFID_TRIGGER_MODE_CONTINUOUS2'",
+          "tags": [],
+          "docs": ""
+        }
+      ]
+    },
+    {
+      "name": "DensoScannerPolarization",
+      "slug": "densoscannerpolarization",
+      "members": [
+        {
+          "name": "POLARIZATION_V",
+          "value": "'POLARIZATION_V'",
+          "tags": [],
+          "docs": ""
+        },
+        {
+          "name": "POLARIZATION_H",
+          "value": "'POLARIZATION_H'",
+          "tags": [],
+          "docs": ""
+        },
+        {
+          "name": "POLARIZATION_BOTH",
+          "value": "'POLARIZATION_BOTH'",
+          "tags": [],
+          "docs": ""
+        }
+      ]
+    },
+    {
+      "name": "DensoScannerEvent",
+      "slug": "densoscannerevent",
+      "members": [
+        {
+          "name": "OnScannerStatusChanged",
+          "value": "'OnScannerStatusChanged'",
+          "tags": [],
+          "docs": ""
+        },
+        {
+          "name": "ReadData",
+          "value": "'ReadData'",
+          "tags": [],
+          "docs": ""
+        }
+      ]
+    },
+    {
+      "name": "DensoOnScannerStatusChangedEvent",
+      "slug": "densoonscannerstatuschangedevent",
+      "members": [
+        {
+          "name": "SCANNER_STATUS_CLAIMED",
+          "value": "'SCANNER_STATUS_CLAIMED'",
+          "tags": [],
+          "docs": ""
+        },
+        {
+          "name": "SCANNER_STATUS_CLOSE_WAIT",
+          "value": "'SCANNER_STATUS_CLOSE_WAIT'",
+          "tags": [],
+          "docs": ""
+        },
+        {
+          "name": "SCANNER_STATUS_CLOSED",
+          "value": "'SCANNER_STATUS_CLOSED'",
+          "tags": [],
+          "docs": ""
+        },
+        {
+          "name": "SCANNER_STATUS_UNKNOWN",
+          "value": "'SCANNER_STATUS_UNKNOWN'",
+          "tags": [],
+          "docs": ""
+        }
+      ]
+    }
+  ],
+  "typeAliases": [],
+  "pluginConfigs": []
+}
