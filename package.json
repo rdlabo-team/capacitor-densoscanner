@@ -9,10 +9,7 @@
   "files": [
     "android/src/main/",
     "android/build.gradle",
-    "src/",
     "dist/",
-    "rollup.config.mjs",
-    "tsconfig.json",
     "ios/Sources",
     "ios/Tests",
     "Package.swift",
