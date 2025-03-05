@@ -48,7 +48,6 @@ public class DensoScannerPlugin: CAPPlugin, CAPBridgedPlugin, ScannerAcceptStatu
             }
             
             for scanner in scanners {
-                print(scanner.getBTLocalName())
                 if implementation.setupScanner(scanner: scanner) {
                     if let model = scanner.getBTLocalName(), model.contains(AppConstant.deviceSP1) {
                         break
@@ -60,6 +59,7 @@ public class DensoScannerPlugin: CAPPlugin, CAPBridgedPlugin, ScannerAcceptStatu
             }
         } else {
             CommManager.sharedInstance().addAcceptStatusListener(listener: self)
+            CommManager.sharedInstance().startAccept()
         }
         
         call.resolve([:])
