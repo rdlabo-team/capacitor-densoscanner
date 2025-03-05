@@ -26,12 +26,19 @@ import DENSOScannerSDK
         var error: NSError? = nil
         
         let btSettings = scanner.getBtSettings(&error)
-        if(plugin!.connectMode == DensoScannerConnectMode.SLAVE.rawValue && btSettings?.mode != .MODE_SLAVE) {
+        if(connectMode == DensoScannerConnectMode.SLAVE.rawValue && btSettings?.mode != .MODE_SLAVE) {
             btSettings?.mode = .MODE_SLAVE
             scanner.setBtSettings(btSettings, error: &error)
-        } else if (plugin!.connectMode == DensoScannerConnectMode.MASTER.rawValue && btSettings?.mode != .MODE_MASTER) {
+        } else if (connectMode == DensoScannerConnectMode.MASTER.rawValue && btSettings?.mode != .MODE_MASTER) {
             btSettings?.mode = .MODE_MASTER
             scanner.setBtSettings(btSettings, error: &error)
+        }else if (connectMode == DensoScannerConnectMode.AUTO.rawValue && btSettings?.mode != .MODE_AUTO) {
+            btSettings?.mode = .MODE_AUTO
+            scanner.setBtSettings(btSettings, error: &error)
+        }
+        
+        if (error != nil) {
+            print(error);
         }
         
         return btSettings!

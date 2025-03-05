@@ -246,7 +246,7 @@ public class DensoScannerPlugin: CAPPlugin, CAPBridgedPlugin, ScannerAcceptStatu
         }
         
         if (call.getString("connectMode") != nil) {
-            var btSettings = implementation.updateConnectMode(scanner: scanner, connectMode: call.getString("connectMode")!)
+            btSettings = implementation.updateConnectMode(scanner: scanner, connectMode: call.getString("connectMode")!)
         }
         
         call.resolve(implementation.receiveCommScannerSettings(settings: settings!, btSettings: btSettings!))
