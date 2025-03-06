@@ -269,16 +269,18 @@ public class DensoScannerPlugin extends Plugin implements ScannerAcceptStatusLis
     public void onRFIDDataReceived(CommScanner scanner, final RFIDDataReceivedEvent rfidDataReceivedEvent) {
         JSArray stringValues = new JSArray();
         JSArray hexValues = new JSArray();
-        StringBuilder hexString = new StringBuilder();
 
         for (int i = 0; i < rfidDataReceivedEvent.getRFIDData().size(); i++) {
+            StringBuilder str = new StringBuilder();
+            StringBuilder hexString = new StringBuilder();
+
             byte[] uii = rfidDataReceivedEvent.getRFIDData().get(i).getUII();
             for (byte loop : uii) {
-                stringValues.put(String.format("%02X ", loop).trim());
+                str.append(String.format("%02X ", loop).trim());
                 hexString.append(String.format("%02X ", loop));
             }
-            String result = hexString.toString().trim();
-            hexValues.put(result);
+            stringValues.put(str.toString().trim());
+            hexValues.put(hexString.toString().trim());
         }
 
         notifyListeners(
