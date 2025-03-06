@@ -47,6 +47,7 @@ public class DensoScannerPlugin extends Plugin implements ScannerAcceptStatusLis
     public static boolean scannerConnected = false;
     public static boolean isOpened = false;
     public static String connectMode = "MASTER";
+    public static boolean isSearch = false;
 
     private DensoScanner implementation = new DensoScanner();
 
@@ -74,9 +75,10 @@ public class DensoScannerPlugin extends Plugin implements ScannerAcceptStatusLis
                     }
                 }
             }
-        } else {
+        } else if (!isSearch) {
             CommManager.addAcceptStatusListener(this);
             CommManager.startAccept();
+            isSearch = true;
             Log.d("denso", "startAccept");
         }
 
@@ -152,6 +154,7 @@ public class DensoScannerPlugin extends Plugin implements ScannerAcceptStatusLis
                 call.reject(e.getLocalizedMessage());
             }
         } else {
+            this.endAccept();
             call.resolve();
         }
     }
@@ -232,9 +235,7 @@ public class DensoScannerPlugin extends Plugin implements ScannerAcceptStatusLis
     @Override
     public void OnScannerAppeared(CommScanner mCommScanner) {
         setupCommScanner(mCommScanner);
-
-        CommManager.endAccept();
-        CommManager.removeAcceptStatusListener(this);
+        this.endAccept();
     }
 
     @Override
@@ -304,9 +305,18 @@ public class DensoScannerPlugin extends Plugin implements ScannerAcceptStatusLis
             new JSObject().put("status", DensoScannerStatusEvents.SCANNER_STATUS_CLAIMED.getStatus())
         );
 
+        this.endAccept();
         scannerConnected = true;
         connectedCommScanner.addStatusListener(this);
         commScanner = connectedCommScanner;
+    }
+
+    private void endAccept() {
+        if (isSearch) {
+            isSearch = false;
+            CommManager.endAccept();
+            CommManager.removeAcceptStatusListener(this);
+        }
     }
 
     private Boolean isBluetoothPermissionGranted() {

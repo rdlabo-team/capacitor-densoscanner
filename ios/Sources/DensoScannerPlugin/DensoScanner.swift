@@ -19,6 +19,8 @@ import DENSOScannerSDK
         scanner.addStatusListener(plugin!)
         updateConnectMode(scanner: scanner, connectMode: plugin!.connectMode)
         
+        plugin!.endAccept()
+        
         return true
     }
     

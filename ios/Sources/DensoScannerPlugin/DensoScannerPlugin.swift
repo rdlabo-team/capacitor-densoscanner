@@ -25,6 +25,7 @@ public class DensoScannerPlugin: CAPPlugin, CAPBridgedPlugin, ScannerAcceptStatu
     private let implementation = DensoScanner()
     public var scannerConnected: Bool = false
     public var isOpen: Bool = false
+    public var isSearch: Bool = false
     public var commScanner: CommScanner? = nil
     public var rfidScanner: RFIDScanner? = nil
     public var connectMode: String = "MASTER"
@@ -57,18 +58,17 @@ public class DensoScannerPlugin: CAPPlugin, CAPBridgedPlugin, ScannerAcceptStatu
                     }
                 }
             }
-        } else {
+        } else if (!isSearch) {
             CommManager.sharedInstance().addAcceptStatusListener(listener: self)
             CommManager.sharedInstance().startAccept()
+            isSearch = true
         }
         
         call.resolve([:])
     }
     
     @objc func detach(_ call: CAPPluginCall) {
-        if (isOpen) {
-            CommManager.sharedInstance()?.endAccept()
-        }
+        self.endAccept();
         
         commScanner?.removeStatusListener(self)
         
@@ -257,9 +257,16 @@ public class DensoScannerPlugin: CAPPlugin, CAPBridgedPlugin, ScannerAcceptStatu
         if !scannerSetup {
             return
         }
-        
-        CommManager.sharedInstance().endAccept()
-        CommManager.sharedInstance().removeAcceptStatusListener(listener: self)
+        self.endAccept()
+    }
+    
+    
+    public func endAccept()-> Void {
+        if (self.isSearch) {
+            self.isSearch = false;
+            CommManager.sharedInstance().endAccept()
+            CommManager.sharedInstance().removeAcceptStatusListener(listener: self)
+        }
     }
     
     public func OnRFIDDataReceived(scanner: CommScanner!, rfidEvent: RFIDDataReceivedEvent!) {
