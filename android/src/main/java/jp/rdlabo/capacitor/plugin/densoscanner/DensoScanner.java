@@ -34,11 +34,14 @@ public class DensoScanner {
         try {
             btSet = connectedCommScanner.getBtSettings();
 
-            if (Objects.equals(connectMode, "MASTER") && btSet.mode != CommScannerBtSettings.Mode.SLAVE) {
+            if (Objects.equals(connectMode, "MASTER") && btSet.mode != CommScannerBtSettings.Mode.MASTER) {
+                btSet.mode = CommScannerBtSettings.Mode.MASTER;
+                connectedCommScanner.setBtSettings(btSet);
+            } else if (Objects.equals(connectMode, "SLAVE") && btSet.mode != CommScannerBtSettings.Mode.SLAVE) {
                 btSet.mode = CommScannerBtSettings.Mode.SLAVE;
                 connectedCommScanner.setBtSettings(btSet);
-            } else if (Objects.equals(connectMode, "SLAVE") && btSet.mode != CommScannerBtSettings.Mode.MASTER) {
-                btSet.mode = CommScannerBtSettings.Mode.MASTER;
+            } else if (Objects.equals(connectMode, "AUTO") && btSet.mode != CommScannerBtSettings.Mode.AUTO) {
+                btSet.mode = CommScannerBtSettings.Mode.AUTO;
                 connectedCommScanner.setBtSettings(btSet);
             }
         } catch (Exception e) {
