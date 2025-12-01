@@ -1,12 +1,11 @@
 import { Component, inject, OnDestroy, OnInit, signal } from '@angular/core';
 import { IonHeader, IonToolbar, IonTitle, IonContent, IonList, IonItem, IonLabel } from '@ionic/angular/standalone';
-import { DensoScanner } from '@rdlabo/capacitor-densoscanner';
-import {
-  DensoOnScannerStatusChangedEvent,
+import { DensoScanner, DensoOnScannerStatusChangedEvent, DensoScannerAttachConnectMode,
+  DensoScannerAttachSearchType,
   DensoScannerEvent,
   DensoScannerPolarization,
   DensoScannerTriggerMode,
-} from '../../../../src';
+} from '@rdlabo/capacitor-densoscanner';
 import { PluginListenerHandle } from '@capacitor/core';
 import { ReaderService } from '../reader/reader.service';
 import { ModalController } from '@ionic/angular/standalone';
@@ -44,7 +43,10 @@ export class HomePage implements OnInit, OnDestroy {
   }
 
   attach() {
-    DensoScanner.attach();
+    DensoScanner.attach({
+      searchType: DensoScannerAttachSearchType.INITIAL,
+      connectMode: DensoScannerAttachConnectMode.AUTO,
+    });
   }
 
   detach() {
@@ -79,6 +81,7 @@ export class HomePage implements OnInit, OnDestroy {
       powerLevelRead: 30,
       session: 0,
       polarization: DensoScannerPolarization.POLARIZATION_BOTH,
+      connectMode: DensoScannerAttachConnectMode.AUTO,
     });
   }
 }
