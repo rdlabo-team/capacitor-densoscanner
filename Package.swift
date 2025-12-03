@@ -17,7 +17,8 @@ let package = Package(
             name: "DensoScannerPlugin",
             dependencies: [
                 .product(name: "Capacitor", package: "capacitor-swift-pm"),
-                .product(name: "Cordova", package: "capacitor-swift-pm")
+                .product(name: "Cordova", package: "capacitor-swift-pm"),
+                .product(name: "DENSOScannerSDK", package: "DENSOScannerSDK")
             ],
             path: "ios/Sources/DensoScannerPlugin"),
         .testTarget(
