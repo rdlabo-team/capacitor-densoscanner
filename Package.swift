@@ -2,11 +2,12 @@
 import PackageDescription
 
 let package = Package(
-    name: "CapacitorDensoscanner",
+    name: "RdlaboCapacitorDensoscanner",
+    defaultLocalization: "en",
     platforms: [.iOS(.v14)],
     products: [
         .library(
-            name: "CapacitorDensoscanner",
+            name: "RdlaboCapacitorDensoscanner",
             targets: ["DensoScannerPlugin"])
     ],
     dependencies: [
