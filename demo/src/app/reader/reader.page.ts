@@ -1,5 +1,5 @@
 import { Component, inject, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { FormsModule } from '@angular/forms';
 import {
   IonButton,
@@ -25,14 +25,13 @@ import { ReaderService } from './reader.service';
     IonHeader,
     IonTitle,
     IonToolbar,
-    CommonModule,
     FormsModule,
     IonButtons,
     IonButton,
     IonList,
     IonItem,
-    IonLabel,
-  ],
+    IonLabel
+],
 })
 export class ReaderPage implements OnInit {
   readonly modalCtrl = inject(ModalController);
