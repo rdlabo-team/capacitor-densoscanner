@@ -78,9 +78,15 @@ And update the following files: AndroidManifest.xml
 attach(options: DensoScannerAttachOptions) => Promise<void>
 ```
 
-| Param         | Type                                                                            |
-| ------------- | ------------------------------------------------------------------------------- |
-| **`options`** | <code><a href="#densoscannerattachoptions">DensoScannerAttachOptions</a></code> |
+DENSO SP1 RFIDリーダーに接続します。
+
+接続が成功すると、OnScannerStatusChanged イベントで 'SCANNER_STATUS_CLAIMED' が通知されます。
+
+| Param         | Type                                                                            | Description |
+| ------------- | ------------------------------------------------------------------------------- | ----------- |
+| **`options`** | <code><a href="#densoscannerattachoptions">DensoScannerAttachOptions</a></code> | 接続オプション     |
+
+**Since:** 0.0.1
 
 --------------------
 
@@ -91,6 +97,12 @@ attach(options: DensoScannerAttachOptions) => Promise<void>
 detach() => Promise<void>
 ```
 
+DENSO SP1 RFIDリーダーから切断します。
+
+接続を解除し、リソースを解放します。
+
+**Since:** 0.0.1
+
 --------------------
 
 
@@ -99,6 +111,14 @@ detach() => Promise<void>
 ```typescript
 openInventory() => Promise<void>
 ```
+
+インベントリモードでRFIDタグの読み取りを開始します。
+
+トリガーを押すたびに連続してタグを読み取ります。
+読み取られたデータは ReadData イベントで通知されます。
+読み取りを停止するには close() を呼び出してください。
+
+**Since:** 0.0.1
 
 --------------------
 
@@ -109,6 +129,14 @@ openInventory() => Promise<void>
 pullData() => Promise<void>
 ```
 
+プルデータモードでRFIDタグを1回だけ読み取ります。
+
+トリガーを1回押したときに1回だけタグを読み取ります。
+読み取られたデータは ReadData イベントで通知されます。
+再度読み取る場合は、このメソッドを再度呼び出してください。
+
+**Since:** 0.0.1
+
 --------------------
 
 
@@ -117,6 +145,12 @@ pullData() => Promise<void>
 ```typescript
 close() => Promise<void>
 ```
+
+RFIDタグの読み取りを停止します。
+
+openInventory() または pullData() で開始した読み取りを終了します。
+
+**Since:** 0.0.1
 
 --------------------
 
@@ -127,7 +161,13 @@ close() => Promise<void>
 getSettings() => Promise<DensoScannerSettings>
 ```
 
+現在のスキャナ設定を取得します。
+
+トリガーモード、出力レベル、セッション、偏波、接続モードなどの設定値を取得できます。
+
 **Returns:** <code>Promise&lt;<a href="#densoscannersettings">DensoScannerSettings</a>&gt;</code>
+
+**Since:** 0.0.1
 
 --------------------
 
@@ -138,11 +178,18 @@ getSettings() => Promise<DensoScannerSettings>
 setSettings(options: DensoScannerSettings) => Promise<DensoScannerSettings>
 ```
 
-| Param         | Type                                                                  |
-| ------------- | --------------------------------------------------------------------- |
-| **`options`** | <code><a href="#densoscannersettings">DensoScannerSettings</a></code> |
+スキャナ設定を変更します。
+
+トリガーモード、出力レベル、セッション、偏波、接続モードなどを変更できます。
+変更後の設定値が返されます。
+
+| Param         | Type                                                                  | Description |
+| ------------- | --------------------------------------------------------------------- | ----------- |
+| **`options`** | <code><a href="#densoscannersettings">DensoScannerSettings</a></code> | 変更する設定値     |
 
 **Returns:** <code>Promise&lt;<a href="#densoscannersettings">DensoScannerSettings</a>&gt;</code>
+
+**Since:** 0.0.1
 
 --------------------
 
@@ -153,12 +200,18 @@ setSettings(options: DensoScannerSettings) => Promise<DensoScannerSettings>
 addListener(eventName: DensoScannerEvent.OnScannerStatusChanged, listenerFunc: (event: OnScannerStatusChangedEvent) => void) => Promise<PluginListenerHandle>
 ```
 
-| Param              | Type                                                                                                    |
-| ------------------ | ------------------------------------------------------------------------------------------------------- |
-| **`eventName`**    | <code><a href="#densoscannerevent">DensoScannerEvent.OnScannerStatusChanged</a></code>                  |
-| **`listenerFunc`** | <code>(event: <a href="#onscannerstatuschangedevent">OnScannerStatusChangedEvent</a>) =&gt; void</code> |
+スキャナの状態変更イベントをリッスンします。
+
+スキャナが接続された、切断された、または状態が変わったときに通知されます。
+
+| Param              | Type                                                                                                    | Description                  |
+| ------------------ | ------------------------------------------------------------------------------------------------------- | ---------------------------- |
+| **`eventName`**    | <code><a href="#densoscannerevent">DensoScannerEvent.OnScannerStatusChanged</a></code>                  | 'OnScannerStatusChanged' を指定 |
+| **`listenerFunc`** | <code>(event: <a href="#onscannerstatuschangedevent">OnScannerStatusChangedEvent</a>) =&gt; void</code> | 状態変更時に呼び出されるコールバック関数         |
 
 **Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt;</code>
+
+**Since:** 0.0.1
 
 --------------------
 
@@ -169,12 +222,18 @@ addListener(eventName: DensoScannerEvent.OnScannerStatusChanged, listenerFunc: (
 addListener(eventName: DensoScannerEvent.ReadData, listenerFunc: (event: ReadDataEvent) => void) => Promise<PluginListenerHandle>
 ```
 
-| Param              | Type                                                                        |
-| ------------------ | --------------------------------------------------------------------------- |
-| **`eventName`**    | <code><a href="#densoscannerevent">DensoScannerEvent.ReadData</a></code>    |
-| **`listenerFunc`** | <code>(event: <a href="#readdataevent">ReadDataEvent</a>) =&gt; void</code> |
+RFIDタグの読み取りデータイベントをリッスンします。
+
+openInventory() または pullData() でタグが読み取られたときに通知されます。
+
+| Param              | Type                                                                        | Description             |
+| ------------------ | --------------------------------------------------------------------------- | ----------------------- |
+| **`eventName`**    | <code><a href="#densoscannerevent">DensoScannerEvent.ReadData</a></code>    | 'ReadData' を指定          |
+| **`listenerFunc`** | <code>(event: <a href="#readdataevent">ReadDataEvent</a>) =&gt; void</code> | データ読み取り時に呼び出されるコールバック関数 |
 
 **Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt;</code>
+
+**Since:** 0.0.1
 
 --------------------
 
@@ -184,21 +243,27 @@ addListener(eventName: DensoScannerEvent.ReadData, listenerFunc: (event: ReadDat
 
 #### DensoScannerAttachOptions
 
-| Prop              | Type                                                                                    | Description                                                                  |
-| ----------------- | --------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
-| **`searchType`**  | <code><a href="#densoscannerattachsearchtype">DensoScannerAttachSearchType</a></code>   | 初回接続はINITIAL、再接続はRECONNECTを指定します。 ただし、SLAVE（多対多）として運用する時は常にINITIALを指定してください。 |
-| **`connectMode`** | <code><a href="#densoscannerattachconnectmode">DensoScannerAttachConnectMode</a></code> | 1対1で運用する時はMASTER、多対多で運用する時はSLAVEを指定します。 なお、SLAVEでは、毎回Bluetoothの接続設定が必要です。    |
+attach() メソッドのオプション
+
+| Prop              | Type                                                                                    | Description                                                                                 |
+| ----------------- | --------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------- |
+| **`searchType`**  | <code><a href="#densoscannerattachsearchtype">DensoScannerAttachSearchType</a></code>   | スキャナの検索タイプ 初回接続時は INITIAL、再接続時は RECONNECT を指定します。 SLAVE（多対多）として運用する場合は常に INITIAL を指定してください。 |
+| **`connectMode`** | <code><a href="#densoscannerattachconnectmode">DensoScannerAttachConnectMode</a></code> | 接続モード 1対1で運用する場合は MASTER、多対多で運用する場合は SLAVE を指定します。 SLAVE では、毎回Bluetoothの接続設定が必要です。          |
 
 
 #### DensoScannerSettings
 
-| Prop                 | Type                                                                                    |
-| -------------------- | --------------------------------------------------------------------------------------- |
-| **`triggerMode`**    | <code><a href="#densoscannertriggermode">DensoScannerTriggerMode</a></code>             |
-| **`powerLevelRead`** | <code>number</code>                                                                     |
-| **`session`**        | <code>number</code>                                                                     |
-| **`polarization`**   | <code><a href="#densoscannerpolarization">DensoScannerPolarization</a></code>           |
-| **`connectMode`**    | <code><a href="#densoscannerattachconnectmode">DensoScannerAttachConnectMode</a></code> |
+スキャナの設定を表すインターフェース
+
+setSettings() で設定を変更する際に使用します。
+
+| Prop                 | Type                                                                                    | Description                                  |
+| -------------------- | --------------------------------------------------------------------------------------- | -------------------------------------------- |
+| **`triggerMode`**    | <code><a href="#densoscannertriggermode">DensoScannerTriggerMode</a></code>             | トリガーモード。デフォルト: RFID_TRIGGER_MODE_CONTINUOUS1 |
+| **`powerLevelRead`** | <code>number</code>                                                                     | 読み取り出力レベル。範囲: 4-30、デフォルト: 30                 |
+| **`session`**        | <code>number</code>                                                                     | セッション番号。範囲: 0-3、デフォルト: 0                     |
+| **`polarization`**   | <code><a href="#densoscannerpolarization">DensoScannerPolarization</a></code>           | 偏波設定。デフォルト: POLARIZATION_BOTH                |
+| **`connectMode`**    | <code><a href="#densoscannerattachconnectmode">DensoScannerAttachConnectMode</a></code> | 接続モード                                        |
 
 
 #### PluginListenerHandle
@@ -210,22 +275,25 @@ addListener(eventName: DensoScannerEvent.ReadData, listenerFunc: (event: ReadDat
 
 #### OnScannerStatusChangedEvent
 
-- SCANNER_STATUS_CLAIMED: スキャナが獲得されました
-- SCANNER_STATUS_CLOSE_WAIT: クローズ待ちです。切断検知するとCommScanner#closeされるまでこの状態となります
-- SCANNER_STATUS_CLOSED:  スキャナが解放されました
-- SCANNER_STATUS_UNKNOWN: 不明な状態です
+スキャナの状態変更イベント
 
-| Prop         | Type                                                                                          |
-| ------------ | --------------------------------------------------------------------------------------------- |
-| **`status`** | <code><a href="#densoonscannerstatuschangedevent">DensoOnScannerStatusChangedEvent</a></code> |
+attach() や detach() の実行時、またはスキャナの接続状態が変わったときに通知されます。
+
+| Prop         | Type                                                                                          | Description |
+| ------------ | --------------------------------------------------------------------------------------------- | ----------- |
+| **`status`** | <code><a href="#densoonscannerstatuschangedevent">DensoOnScannerStatusChangedEvent</a></code> | スキャナの現在の状態  |
 
 
 #### ReadDataEvent
 
-| Prop            | Type                  |
-| --------------- | --------------------- |
-| **`codes`**     | <code>string[]</code> |
-| **`hexValues`** | <code>string[]</code> |
+RFIDタグの読み取りデータイベント
+
+openInventory() または pullData() でタグが読み取られたときに通知されます。
+
+| Prop            | Type                  | Description                         |
+| --------------- | --------------------- | ----------------------------------- |
+| **`codes`**     | <code>string[]</code> | 読み取られたRFIDタグのコード（16進数文字列、スペース区切りなし） |
+| **`hexValues`** | <code>string[]</code> | 読み取られたRFIDタグの16進数値（スペース区切り）         |
 
 
 ### Enums
@@ -233,56 +301,56 @@ addListener(eventName: DensoScannerEvent.ReadData, listenerFunc: (event: ReadDat
 
 #### DensoScannerAttachSearchType
 
-| Members         | Value                    |
-| --------------- | ------------------------ |
-| **`INITIAL`**   | <code>'INITIAL'</code>   |
-| **`RECONNECT`** | <code>'RECONNECT'</code> |
+| Members         | Value                    | Description                |
+| --------------- | ------------------------ | -------------------------- |
+| **`INITIAL`**   | <code>'INITIAL'</code>   | 初回接続時に使用。既存の接続済みスキャナを検索します |
+| **`RECONNECT`** | <code>'RECONNECT'</code> | 再接続時に使用。スキャナからの接続を待機します    |
 
 
 #### DensoScannerAttachConnectMode
 
-| Members      | Value                 |
-| ------------ | --------------------- |
-| **`MASTER`** | <code>'MASTER'</code> |
-| **`SLAVE`**  | <code>'SLAVE'</code>  |
-| **`AUTO`**   | <code>'AUTO'</code>   |
+| Members      | Value                 | Description                   |
+| ------------ | --------------------- | ----------------------------- |
+| **`MASTER`** | <code>'MASTER'</code> | 1対1で運用する場合に使用。アプリがスキャナを制御します  |
+| **`SLAVE`**  | <code>'SLAVE'</code>  | 多対多で運用する場合に使用。複数のデバイスから接続可能です |
+| **`AUTO`**   | <code>'AUTO'</code>   | 自動でモードを選択します                  |
 
 
 #### DensoScannerTriggerMode
 
-| Members                             | Value                                        |
-| ----------------------------------- | -------------------------------------------- |
-| **`RFID_TRIGGER_MODE_AUTO_OFF`**    | <code>'RFID_TRIGGER_MODE_AUTO_OFF'</code>    |
-| **`RFID_TRIGGER_MODE_MOMENTARY`**   | <code>'RFID_TRIGGER_MODE_MOMENTARY'</code>   |
-| **`RFID_TRIGGER_MODE_ALTERNATE`**   | <code>'RFID_TRIGGER_MODE_ALTERNATE'</code>   |
-| **`RFID_TRIGGER_MODE_CONTINUOUS1`** | <code>'RFID_TRIGGER_MODE_CONTINUOUS1'</code> |
-| **`RFID_TRIGGER_MODE_CONTINUOUS2`** | <code>'RFID_TRIGGER_MODE_CONTINUOUS2'</code> |
+| Members                             | Value                                        | Description                           |
+| ----------------------------------- | -------------------------------------------- | ------------------------------------- |
+| **`RFID_TRIGGER_MODE_AUTO_OFF`**    | <code>'RFID_TRIGGER_MODE_AUTO_OFF'</code>    | トリガーを離すと読み取りを停止                       |
+| **`RFID_TRIGGER_MODE_MOMENTARY`**   | <code>'RFID_TRIGGER_MODE_MOMENTARY'</code>   | トリガーを押している間のみ読み取り                     |
+| **`RFID_TRIGGER_MODE_ALTERNATE`**   | <code>'RFID_TRIGGER_MODE_ALTERNATE'</code>   | トリガーを押すたびに読み取り開始/停止を切り替え              |
+| **`RFID_TRIGGER_MODE_CONTINUOUS1`** | <code>'RFID_TRIGGER_MODE_CONTINUOUS1'</code> | トリガーを1回押すと連続読み取りを開始、再度押すと停止           |
+| **`RFID_TRIGGER_MODE_CONTINUOUS2`** | <code>'RFID_TRIGGER_MODE_CONTINUOUS2'</code> | トリガーを1回押すと連続読み取りを開始、再度押すと停止（別の動作パターン） |
 
 
 #### DensoScannerPolarization
 
-| Members                 | Value                            |
-| ----------------------- | -------------------------------- |
-| **`POLARIZATION_V`**    | <code>'POLARIZATION_V'</code>    |
-| **`POLARIZATION_H`**    | <code>'POLARIZATION_H'</code>    |
-| **`POLARIZATION_BOTH`** | <code>'POLARIZATION_BOTH'</code> |
+| Members                 | Value                            | Description               |
+| ----------------------- | -------------------------------- | ------------------------- |
+| **`POLARIZATION_V`**    | <code>'POLARIZATION_V'</code>    | 垂直方向のタグを読み取りやすくします        |
+| **`POLARIZATION_H`**    | <code>'POLARIZATION_H'</code>    | 水平方向のタグを読み取りやすくします        |
+| **`POLARIZATION_BOTH`** | <code>'POLARIZATION_BOTH'</code> | 垂直・水平どちらのタグも読み取ります（デフォルト） |
 
 
 #### DensoScannerEvent
 
-| Members                      | Value                                 |
-| ---------------------------- | ------------------------------------- |
-| **`OnScannerStatusChanged`** | <code>'OnScannerStatusChanged'</code> |
-| **`ReadData`**               | <code>'ReadData'</code>               |
+| Members                      | Value                                 | Description              |
+| ---------------------------- | ------------------------------------- | ------------------------ |
+| **`OnScannerStatusChanged`** | <code>'OnScannerStatusChanged'</code> | スキャナの状態が変更されたときに発火するイベント |
+| **`ReadData`**               | <code>'ReadData'</code>               | RFIDタグが読み取られたときに発火するイベント |
 
 
 #### DensoOnScannerStatusChangedEvent
 
-| Members                         | Value                                    |
-| ------------------------------- | ---------------------------------------- |
-| **`SCANNER_STATUS_CLAIMED`**    | <code>'SCANNER_STATUS_CLAIMED'</code>    |
-| **`SCANNER_STATUS_CLOSE_WAIT`** | <code>'SCANNER_STATUS_CLOSE_WAIT'</code> |
-| **`SCANNER_STATUS_CLOSED`**     | <code>'SCANNER_STATUS_CLOSED'</code>     |
-| **`SCANNER_STATUS_UNKNOWN`**    | <code>'SCANNER_STATUS_UNKNOWN'</code>    |
+| Members                         | Value                                    | Description                                     |
+| ------------------------------- | ---------------------------------------- | ----------------------------------------------- |
+| **`SCANNER_STATUS_CLAIMED`**    | <code>'SCANNER_STATUS_CLAIMED'</code>    | スキャナが正常に接続され、使用可能な状態                            |
+| **`SCANNER_STATUS_CLOSE_WAIT`** | <code>'SCANNER_STATUS_CLOSE_WAIT'</code> | スキャナの切断が検知され、クローズ待ちの状態。close() が呼ばれるまでこの状態となります |
+| **`SCANNER_STATUS_CLOSED`**     | <code>'SCANNER_STATUS_CLOSED'</code>     | スキャナが切断され、解放された状態                               |
+| **`SCANNER_STATUS_UNKNOWN`**    | <code>'SCANNER_STATUS_UNKNOWN'</code>    | 不明な状態                                           |
 
 </docgen-api>
